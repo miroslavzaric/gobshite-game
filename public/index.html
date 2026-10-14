@@ -19,34 +19,13 @@ bestEl.textContent=best;
 function resize(){dpr=Math.min(devicePixelRatio||1,2);const r=canvas.getBoundingClientRect();W=Math.max(300,r.width);H=Math.max(500,r.height);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}new ResizeObserver(resize).observe(canvas);resize();
 function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
 function poly(points,fill,stroke=null,lw=1){ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+const heroSheet=new Image();heroSheet.src='/assets/leprechaun-sheet.png';
+const obstacleImages={};['rock','log','barrel','barrier','sheep','train','coin'].forEach(k=>{obstacleImages[k]=new Image();obstacleImages[k].src='/assets/'+k+'.png'});
 function drawLeprechaun(c,x,y,scale=1,pose='run'){
  c.save();c.translate(x,y);c.scale(scale,scale);
- const legSwing=pose==='run'?Math.sin(elapsed*13)*5:0;
- // boots/legs
- rect(-13,16+legSwing,10,19,'#68432a');rect(4,16-legSwing,10,19,'#68432a');rect(-17,32+legSwing,16,6,'#302820');rect(2,32-legSwing,17,6,'#302820');
- // coat, arms and hands
- rect(-18,-8,36,29,'#17603e');rect(-24,-5,8,19,'#124436');rect(16,-5,8,19,'#124436');rect(-25,10,9,7,'#f1b984');rect(16,10,9,7,'#f1b984');
- // orange waistcoat, buttons, collar
- poly([[-8,-7],[0,-2],[8,-7],[10,18],[-10,18]],'#d9672d');rect(-2,2,4,4,'#f4c34f');rect(-2,10,4,4,'#f4c34f');
- // ears
- poly([[-17,-34],[-32,-30],[-22,-17],[-15,-20]],'#f2b780','#a8563c',1);poly([[17,-34],[32,-30],[22,-17],[15,-20]],'#f2b780','#a8563c',1);rect(-26,-29,7,3,'#c86b52');rect(19,-29,7,3,'#c86b52');
- // face and hair fringe
- rect(-18,-42,36,35,'#f5c18a');rect(-20,-42,8,14,'#d85d26');rect(12,-43,8,15,'#d85d26');rect(-15,-48,30,11,'#b84f25');rect(-11,-41,8,6,'#ed7830');rect(1,-43,9,7,'#ed7830');
- // eyebrows, whites, pupils
- rect(-12,-34,9,3,'#733a23');rect(4,-34,9,3,'#733a23');rect(-11,-30,8,9,'#fff8df');rect(4,-30,8,9,'#fff8df');rect(-8,-27,4,6,'#263329');rect(7,-27,4,6,'#263329');
- // nose and smile with teeth
- rect(-3,-22,10,7,'#e99a63');rect(-5,-16,18,8,'#7d3027');rect(-3,-15,6,4,'#fff8df');rect(4,-15,6,4,'#fff8df');
- // freckles
- for(const [fx,fy] of [[-13,-20],[-10,-18],[-14,-16],[12,-20],[15,-18],[12,-16]])rect(fx,fy,2,2,'#b95f45');
- // unmistakable full bushy orange beard
- poly([[-17,-16],[-11,-12],[-13,-3],[-7,2],[0,7],[7,2],[13,-3],[11,-12],[17,-16],[15,-5],[10,4],[0,11],[-10,4],[-15,-5]],'#d85d26','#9e421e',1);
- rect(-9,-3,6,6,'#ed7830');rect(4,-3,6,6,'#ed7830');
- // hat: tall crown, wide brim, band, buckle, shamrock
- rect(-24,-54,48,7,'#124436');rect(-18,-72,36,20,'#17603e');rect(-12,-78,24,8,'#28794a');rect(-18,-56,36,4,'#0a3025');rect(1,-55,10,8,'#f4c34f');rect(3,-53,6,4,'#d18b24');
- // shamrock hat badge
- rect(12,-67,5,5,'#8ddf35');rect(17,-70,5,5,'#8ddf35');rect(17,-64,5,5,'#8ddf35');rect(21,-67,4,4,'#8ddf35');
- // collar and boot buckles
- rect(-11,-8,7,4,'#8ddf35');rect(4,-8,7,4,'#8ddf35');rect(-12,33,5,3,'#e8ba56');rect(7,33,5,3,'#e8ba56');
+ let frame=0;
+ if(pose==='jump')frame=4;else if(pose==='duck')frame=5;else if(pose==='slide')frame=6;else if(pose==='fall')frame=7;else frame=Math.floor(elapsed*10)%4;
+ if(heroSheet.complete&&heroSheet.naturalWidth){c.imageSmoothingEnabled=false;c.drawImage(heroSheet,frame*96,0,96,112,-48,-78,96,112)}
  c.restore()
 }
 function drawPortrait(){let p=document.querySelector('#portrait');if(!p)return;let c=p.getContext('2d');c.imageSmoothingEnabled=false;c.clearRect(0,0,p.width,p.height);c.save();c.translate(p.width/2,p.height*.78);drawLeprechaun(c,0,0,1.65,'idle');c.restore()}
@@ -83,19 +62,19 @@ function drawTrack(t){
  for(let i=0;i<15;i++){let p=((i/15+t*.00013)%1),g=geom(p),s=.4+p*.8;rect(W*.015,g.y,18*s,6*s,'#788474');rect(W*.94-18*s,g.y,18*s,6*s,'#788474');rect(W*.015,g.y,18*s,1.5*s,'#a8a28c');rect(W*.94-18*s,g.y,18*s,1.5*s,'#a8a28c')}
 }
 function laneX(ln,p){let g=geom(p);return W/2+(ln-1)*g.half*.52}
-function obstacleDraw(o){let p=o.p,g=geom(p),x=laneX(o.lane,p),y=g.y,s=.26+p*.86;ctx.save();ctx.translate(x,y);ctx.scale(s,s);
- // Ground contact point is y=0: each obstacle is built upwards from the sleeper/ballast surface.
- if(o.type==='barrier'){rect(-31,-35,62,10,'#f4e8ce');for(let i=0;i<5;i++)rect(-29+i*13,-35,7,10,'#d84531');rect(-29,-25,6,25,'#5c402b');rect(23,-25,6,25,'#5c402b');rect(-34,-39,68,5,'#aeb8b3')}
- else if(o.type==='bridge'){rect(-43,-55,86,13,'#4d6149');rect(-38,-48,76,8,'#819a70');rect(-41,-40,10,40,'#4d6149');rect(31,-40,10,40,'#4d6149');rect(-18,-42,36,9,'#6dbbd7')}
- else if(o.type==='sheep'){rect(-23,-34,46,27,'#fff1d6');rect(-19,-40,15,13,'#fff1d6');rect(3,-40,15,13,'#fff1d6');rect(16,-31,13,17,'#382c26');rect(20,-27,3,3,'#fff');rect(-14,-7,5,7,'#41332b');rect(9,-7,5,7,'#41332b')}
- else if(o.type==='rock'){poly([[-24,0],[-24,-18],[-13,-35],[3,-39],[22,-23],[24,0]],'#747f79','#3d4b44',2);poly([[-13,-23],[-7,-31],[3,-34],[0,-25]],'#aab1a5')}
- else if(o.type==='log'){rect(-35,-24,70,22,'#8a542e');rect(-32,-22,9,18,'#c18a4b');rect(23,-22,9,18,'#c18a4b');rect(-17,-20,3,14,'#5d371f');rect(8,-20,3,14,'#5d371f')}
- else if(o.type==='train'){rect(-29,-57,58,56,'#263c32');rect(-23,-50,46,25,'#d84631');rect(-18,-45,11,11,'#b9e7e8');rect(5,-45,11,11,'#b9e7e8');rect(-15,-22,30,8,'#1d2520');rect(-24,-9,48,7,'#171e19');rect(-20,-1,10,5,'#1d2520');rect(10,-1,10,5,'#1d2520');rect(-7,-68,14,12,'#2b332d');rect(-6,-78,12,10,'#f2e5b9')}
- ctx.restore()}
+function obstacleDraw(o){
+ let p=o.p,g=geom(p),x=laneX(o.lane,p),y=g.y,scale=.28+p*.9;
+ ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+ let key=o.type==='bridge'?'barrier':o.type;
+ let im=obstacleImages[key];
+ if(im&&im.complete&&im.naturalWidth){ctx.imageSmoothingEnabled=false;let w=96,h=80;ctx.drawImage(im,-w/2,-h, w,h)}
+ else {rect(-20,-20,40,20,'#89502b')}
+ ctx.restore()
+}
 function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){drawLeprechaun(ctx,W/2,H*.75,1.2,'idle');return}for(const o of [...obstacles].sort((a,b)=>a.p-b.p))obstacleDraw(o);let py=H*.79-jump*H*.34;if(duck>0)py+=12;drawLeprechaun(ctx,laneX(lane,.82),py,Math.min(1.4,W/390)*(duck>0?.76:1),state==='crash'?'fall':'run');if(state==='crash')rect(0,0,W,H,'#10251b44')}
 function update(dt){if(state!=='run')return;elapsed+=dt;speed=Math.min(330,175+elapsed*2.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.82,1.45-elapsed*.005)+Math.random()*.35}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);
  for(const o of obstacles){o.p+=speed*dt/(H*.92);if(!o.done&&o.p>.775&&o.p<.895&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
 function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw(t);requestAnimationFrame(loop)}
-title();last=performance.now();requestAnimationFrame(loop);
+heroSheet.onload=()=>{if(state==='title')drawPortrait()};title();last=performance.now();requestAnimationFrame(loop);
 })();
 </script></body></html>

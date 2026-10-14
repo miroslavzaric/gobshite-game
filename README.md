@@ -1,10 +1,11 @@
-# GOBSHITE! — Prototype 0.3
-Revision focused on a more expressive original pixel-art-style Irish leprechaun and improved track readability.
-- Detailed sprite: red/orange hair, bushy beard, freckles, pointed ears, green hat and gold buckle, green coat, orange waistcoat and boots.
-- Same character drawing is used on title screen and gameplay.
-- Track uses a pair of steel rails, wooden cross-sleepers, ballast stones and rail clips, with perspective.
-- Obstacles are drawn from their ground-contact point and scale with track perspective.
-- Keeps touch/keyboard controls, score and local best score, pause, sound toggle, and crash dialogue.
-## Run
-Node.js 20+: `npm start`, then open `http://localhost:3000`.
-Railway uses `npm start` and its assigned `PORT`.
+# GOBSHITE! — Prototype 0.4
+This version introduces actual transparent PNG sprite assets rather than drawing the hero and obstacles entirely from rectangles.
+## Files
+- `public/index.html` — game, controls, HUD, scoring, collisions and asset loading
+- `public/assets/leprechaun-sheet.png` — 8-frame sprite sheet (run frames, jump, duck, slide, crash)
+- `public/assets/*.png` — transparent pixel-art obstacles and coin
+- `server.js`, `package.json` — Node server for Railway
+## Run locally
+Node.js 20+, then `npm start` and open `http://localhost:3000`.
+## Railway
+Keep the existing Railway service/domain. Replace project files in GitHub and commit. Railway runs `npm start` using its assigned `PORT`.
