@@ -1,1 +1,12 @@
-{"name":"gobshite-arcade","version":"0.6.0","description":"GOBSHITE! Irish pixel-art arcade runner","main":"server.js","scripts":{"start":"node server.js"},"engines":{"node":">=20"}}
+{
+  "name": "gobshite-arcade",
+  "version": "0.7.0",
+  "description": "GOBSHITE! Irish railway runner",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
