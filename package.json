@@ -1,1 +1,1 @@
-{"name":"gobshite-arcade","version":"0.4.0","description":"GOBSHITE! Irish pixel-art arcade runner with sprite assets","main":"server.js","scripts":{"start":"node server.js"},"engines":{"node":">=20"}}
+{"name":"gobshite-arcade","version":"0.5.0","description":"GOBSHITE! Irish pixel-art arcade runner with sprite assets","main":"server.js","scripts":{"start":"node server.js"},"engines":{"node":">=20"}}

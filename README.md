@@ -1,11 +1,12 @@
-# GOBSHITE! — Prototype 0.4
-This version introduces actual transparent PNG sprite assets rather than drawing the hero and obstacles entirely from rectangles.
-## Files
-- `public/index.html` — game, controls, HUD, scoring, collisions and asset loading
-- `public/assets/leprechaun-sheet.png` — 8-frame sprite sheet (run frames, jump, duck, slide, crash)
-- `public/assets/*.png` — transparent pixel-art obstacles and coin
-- `server.js`, `package.json` — Node server for Railway
-## Run locally
-Node.js 20+, then `npm start` and open `http://localhost:3000`.
-## Railway
-Keep the existing Railway service/domain. Replace project files in GitHub and commit. Railway runs `npm start` using its assigned `PORT`.
+# GOBSHITE! — Prototype 0.5
+
+A visual correction pass on Prototype 0.4.
+
+- Keeps the custom PNG leprechaun and obstacle sprites.
+- Re-spaces sleepers in screen-space depth so they do not bunch up or dominate the track.
+- Reduces sleeper thickness and width, refines rail clips, and improves track readability.
+- Slightly reduces foreground obstacle scaling and improves HUD line spacing.
+- Keeps the same controls, scoring, local best score, pause and sound controls.
+
+## Deploy
+Replace the repository files with this project while preserving `public/assets/`. Commit to GitHub; Railway should redeploy using `npm start`.
