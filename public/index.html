@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#124436"><title>GOBSHITE! — The Runaway Railway</title><!-- Prototype 0.5: track spacing and depth pass -->
+<meta name="theme-color" content="#124436"><title>GOBSHITE! — The Runaway Railway</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 :root{--green:#124436;--lime:#8ddf35;--orange:#f47735;--cream:#fff0c9}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102b20;color:var(--cream);font-family:'Press Start 2P',monospace;touch-action:none}#wrap{position:relative;width:100%;height:100%;display:flex;justify-content:center;background:#183e31}canvas#game{display:block;width:100%;height:100%;max-width:600px;image-rendering:pixelated}
-#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;font-size:9px;line-height:1.8;text-shadow:2px 2px #10251b;pointer-events:none}button{font:inherit;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12;padding:13px 12px;font-size:11px;cursor:pointer}#hud button{pointer-events:auto;padding:9px}
+#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;font-size:9px;text-shadow:2px 2px #10251b;pointer-events:none}button{font:inherit;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12;padding:13px 12px;font-size:11px;cursor:pointer}#hud button{pointer-events:auto;padding:9px}
 #overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;background:linear-gradient(#071a1240,#071a12a6)}.panel{width:min(100%,410px);max-height:96%;overflow:auto;border:4px solid #15271d;background:#f7e6b7;color:#14251c;box-shadow:0 0 0 4px #e0a24e,8px 8px 0 #071a12;padding:clamp(12px,3vh,22px) 16px;text-align:center}
 .logo{font-size:clamp(28px,8vw,46px);line-height:1.25;letter-spacing:-3px;color:#8ddf35;text-shadow:3px 3px #174d35,6px 6px #10251b}.logo span{color:#f47735}.tag{font-size:8px;line-height:2.1;margin:8px auto;color:#33513c}.hero{height:clamp(130px,22vh,190px);margin:0 auto;display:flex;align-items:center;justify-content:center}.hero canvas{width:200px;height:180px;image-rendering:pixelated}.actions{display:grid;gap:10px;margin-top:10px}.sound{background:#e9d5a2}.small{font-size:7px;line-height:2;margin-top:10px;color:#425543}.hidden{display:none!important}.speech{font-size:10px;line-height:1.8;margin:14px 0}.stats{font-size:8px;line-height:2.4}.hint{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:7px;color:#fff0c9cc;pointer-events:none}
 @media(max-height:700px){.hero{height:110px}.hero canvas{height:108px;width:150px}.tag{font-size:7px;line-height:1.8}.panel{padding:10px}.small{margin-top:6px}}
@@ -42,41 +42,67 @@ document.querySelector('#pauseBtn').onclick=pause;
 function move(a){if(state!=='run')return;if(a==='left')lane=Math.max(0,lane-1);if(a==='right')lane=Math.min(2,lane+1);if(a==='jump'&&!jump&&!duck)jump=.72;if(a==='duck'&&!jump)duck=.65}
 let sx=0,sy=0;canvas.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});canvas.addEventListener('pointerup',e=>{let dx=e.clientX-sx,dy=e.clientY-sy;if(state==='title'){start();return}if(state!=='run'||Math.max(Math.abs(dx),Math.abs(dy))<18)return;if(Math.abs(dx)>Math.abs(dy))move(dx<0?'left':'right');else move(dy<0?'jump':'duck')});
 window.addEventListener('keydown',e=>{if(state==='title'&&(e.key===' '||e.key==='Enter'))start();else if(e.key==='ArrowLeft'||e.key==='a')move('left');else if(e.key==='ArrowRight'||e.key==='d')move('right');else if(e.key==='ArrowUp'||e.key==='w')move('jump');else if(e.key==='ArrowDown'||e.key==='s')move('duck');else if(e.key==='Escape')pause()});
-function geom(p){p=Math.max(0,Math.min(1,p));let y=H*(.32+p*p*.68),half=W*(.075+p*.48);return{y,half,left:W/2-half,right:W/2+half}}
+function geom(p){let y=H*(.32+p*p*.68),half=W*(.075+p*.42);return{y,half,left:W/2-half,right:W/2+half}}
 function drawTrack(t){
- // sky and Irish hills
- rect(0,0,W,H,'#6dbbd7');poly([[0,H*.34],[W*.18,H*.27],[W*.35,H*.32],[W*.53,H*.25],[W*.74,H*.32],[W,H*.26],[W,H*.55],[0,H*.55]],'#4f8f58');poly([[0,H*.43],[W*.22,H*.35],[W*.42,H*.4],[W*.7,H*.33],[W,H*.4],[W,H*.59],[0,H*.59]],'#6ea34d');
- // distant lake and castle
- rect(0,H*.31,W,H*.08,'#4d9fc0');rect(W*.74,H*.20,8,H*.08,'#aaa58c');rect(W*.77,H*.17,8,H*.11,'#9b9c86');rect(W*.80,H*.22,9,H*.06,'#aaa58c');rect(W*.765,H*.24,3,H*.02,'#373c32');rect(W*.79,H*.21,3,H*.02,'#373c32');
- // embankment, ballast base
- poly([[W*.42,H*.32],[W*.58,H*.32],[W*1.12,H],[-W*.12,H]],'#66594a');
- // stones on ballast, deterministic placement to avoid flicker
- for(let i=0;i<220;i++){let p=((i*.618+t*.00008)%1),g=geom(p),seed=i*37%101/101,x=W/2+(seed*2-1)*g.half*.84,s=.8+p*2.4;rect(x,g.y,s*1.6,s,'#8e826d');rect(x+s*.3,g.y+s*.2,s*.6,s*.4,'#b0a087')}
- // rails: dark steel base, silver surface, highlight. Real pair, continuous perspective.
- for(let side of [-1,1]){let x0=W/2+side*W*.075,x1=W/2+side*W*.56;ctx.lineCap='butt';ctx.strokeStyle='#303a39';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#8e9b98';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#e2e5d8';ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(x0-side*1.3,H*.32);ctx.lineTo(x1-side*1.3,H);ctx.stroke();ctx.strokeStyle='#596764';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0+side*2,H*.32);ctx.lineTo(x1+side*2,H);ctx.stroke()}
- // cross sleepers laid underneath rails; nearest ones wider and thicker
- for(let i=0;i<28;i++){
- // Space sleepers evenly in screen-space depth, then convert to perspective depth.
- let q=((i/28+t*.00009)%1),p=Math.sqrt(q),g=geom(p),half=g.half*.82,th=1.2+q*6.2;
- // Dark underside/shadow
- ctx.strokeStyle='#342820';ctx.lineWidth=th+2;ctx.beginPath();ctx.moveTo(W/2-half,g.y+th*.22);ctx.lineTo(W/2+half,g.y+th*.22);ctx.stroke();
- // Timber body
- ctx.strokeStyle='#79502f';ctx.lineWidth=th;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();
- // Top edge highlight
- ctx.strokeStyle='#c28a51';ctx.lineWidth=Math.max(.8,th*.14);ctx.beginPath();ctx.moveTo(W/2-half,g.y-th*.22);ctx.lineTo(W/2+half,g.y-th*.22);ctx.stroke();
- // Clips exactly at the rail positions
+ // layered Irish sky, clouds, distant mountains and patchwork hills
+ rect(0,0,W,H,'#78cce7');
+ // clouds
+ for(let i=0;i<5;i++){let x=((i*117-t*.012)%(W+100)+W+100)%(W+100)-50,y=H*(.08+(i%3)*.045);rect(x,y,35,9,'#dff4ed');rect(x+9,y-6,20,8,'#dff4ed');rect(x+28,y+2,17,7,'#dff4ed')}
+ poly([[0,H*.35],[W*.12,H*.21],[W*.25,H*.32],[W*.42,H*.17],[W*.57,H*.30],[W*.76,H*.18],[W,H*.32],[W,H*.52],[0,H*.52]],'#467b58');
+ poly([[0,H*.41],[W*.18,H*.33],[W*.34,H*.39],[W*.51,H*.29],[W*.7,H*.38],[W*.86,H*.30],[W,H*.37],[W,H*.57],[0,H*.57]],'#6b9f4e');
+ // lake strip and far stone castle
+ rect(0,H*.39,W,H*.055,'#4b9dbb');rect(0,H*.415,W,H*.012,'#8bd0d8');
+ rect(W*.76,H*.22,9,H*.07,'#b3ad91');rect(W*.785,H*.18,10,H*.11,'#a09c82');rect(W*.81,H*.23,10,H*.06,'#b3ad91');
+ for(let i=0;i<3;i++){rect(W*(.755+i*.026),H*.2,4,H*.02,'#e2d6b4')}
+ // grassy verges and distinct ballast bed, trapezoid
+ poly([[W*.40,H*.32],[W*.60,H*.32],[W*1.02,H],[-W*.02,H]],'#4f4940');
+ poly([[W*.425,H*.33],[W*.575,H*.33],[W*.91,H], [W*.09,H]],'#817563');
+ // ballast chips with deterministic positions (no flicker), scale strongly with depth
+ for(let i=0;i<260;i++){
+   let p=((i/260+t*.000025)%1),g=geom(p),u=((i*73)%251)/250-.5;
+   let x=W/2+u*g.half*1.7,sz=0.6+p*2.1;
+   rect(x,g.y,sz*1.8,sz*.8,(i%4===0?'#b0a087':i%3===0?'#665f52':'#948773'));
+ }
+ // sleepers first: thin wooden cross ties, clear gaps, size increases with distance
+ // low-frequency rows at depth, not thick overlapping lines
+ const sleeperCount=20;
+ for(let i=0;i<sleeperCount;i++){
+   let p=((i/sleeperCount+t*.000095)%1);
+   let g=geom(p),half=g.half*.84,th=1.1+p*5.4;
+   // shadow edge
+   ctx.strokeStyle='#38281e';ctx.lineWidth=th+1.8;ctx.beginPath();ctx.moveTo(W/2-half,g.y+1);ctx.lineTo(W/2+half,g.y+1);ctx.stroke();
+   ctx.strokeStyle='#6d422a';ctx.lineWidth=th;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();
+   ctx.strokeStyle='#b47a46';ctx.lineWidth=Math.max(.8,th*.23);ctx.beginPath();ctx.moveTo(W/2-half,g.y-th*.22);ctx.lineTo(W/2+half,g.y-th*.22);ctx.stroke();
+ }
+ // exactly two prominent rails with metal foot, web, head and specular highlight
  for(let side of [-1,1]){
-   let rx=W/2+side*g.half*.50;
-   rect(rx-th*.22,g.y-th*.34,Math.max(1.5,th*.28),Math.max(1.5,th*.24),'#343b39');
-   rect(rx-th*.08,g.y-th*.32,Math.max(1,th*.10),Math.max(1,th*.13),'#d0b889');
+   const x0=W/2+side*W*.075,x1=W/2+side*W*.54;
+   ctx.lineCap='butt';
+   ctx.strokeStyle='#283735';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();
+   ctx.strokeStyle='#697a77';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();
+   ctx.strokeStyle='#c5d0ca';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();
+   ctx.strokeStyle='#f1f0df';ctx.lineWidth=1.25;ctx.beginPath();ctx.moveTo(x0-side*1.2,H*.32);ctx.lineTo(x1-side*1.2,H);ctx.stroke();
+ }
+ // fasteners at visible rail/sleeper crossings
+ for(let i=0;i<sleeperCount;i++){
+   let p=((i/sleeperCount+t*.000095)%1),g=geom(p),th=1.1+p*5.4;
+   for(let side of [-1,1]){
+     let x=W/2+side*g.half*.5;
+     rect(x-th*.28,g.y-th*.25,Math.max(1.5,th*.38),Math.max(1.2,th*.25),'#2d3632');
+     rect(x-th*.16,g.y-th*.20,Math.max(1,th*.12),Math.max(1,th*.12),'#d7c49a');
+   }
+ }
+ // grassy verges, wall blocks and small flowers clearly outside rails
+ for(let i=0;i<17;i++){
+   let p=((i/17+t*.00008)%1),g=geom(p),s=.35+p*.65,y=g.y;
+   rect(W*.015,y,19*s,6*s,'#687a5b');rect(W*.015,y,19*s,1.5*s,'#a2a28a');
+   rect(W*.955-19*s,y,19*s,6*s,'#687a5b');rect(W*.955-19*s,y,19*s,1.5*s,'#a2a28a');
+   if(i%3===0){rect(W*.12,y-3*s,3*s,3*s,'#ffd06a');rect(W*.87,y-4*s,3*s,3*s,'#f5a6a1')}
  }
 }
- // low stone walls either side of the track
- for(let i=0;i<15;i++){let p=((i/15+t*.00013)%1),g=geom(p),s=.4+p*.8;rect(W*.015,g.y,18*s,6*s,'#788474');rect(W*.94-18*s,g.y,18*s,6*s,'#788474');rect(W*.015,g.y,18*s,1.5*s,'#a8a28c');rect(W*.94-18*s,g.y,18*s,1.5*s,'#a8a28c')}
-}
-function laneX(ln,p){let g=geom(p);return W/2+(ln-1)*g.half*.52}
+function laneX(ln,p){let g=geom(p);return W/2+(ln-1)*g.half*.48}
 function obstacleDraw(o){
- let p=o.p,g=geom(p),x=laneX(o.lane,p),y=g.y,scale=.25+p*.72;
+ let p=o.p,g=geom(p),x=laneX(o.lane,p),y=g.y,scale=.22+p*.56;
  ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
  let key=o.type==='bridge'?'barrier':o.type;
  let im=obstacleImages[key];
@@ -84,9 +110,9 @@ function obstacleDraw(o){
  else {rect(-20,-20,40,20,'#89502b')}
  ctx.restore()
 }
-function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){drawLeprechaun(ctx,W/2,H*.75,1.2,'idle');return}for(const o of [...obstacles].sort((a,b)=>a.p-b.p))obstacleDraw(o);let py=H*.79-jump*H*.34;if(duck>0)py+=12;drawLeprechaun(ctx,laneX(lane,.82),py,Math.min(1.4,W/390)*(duck>0?.76:1),state==='crash'?'fall':'run');if(state==='crash')rect(0,0,W,H,'#10251b44')}
+function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){drawLeprechaun(ctx,W/2,H*.75,1.2,'idle');return}for(const o of [...obstacles].sort((a,b)=>a.p-b.p))obstacleDraw(o);let py=H*.79-jump*H*.34;if(duck>0)py+=12;drawLeprechaun(ctx,laneX(lane,.82),py,Math.min(1.15,W/390)*(duck>0?.76:1),state==='crash'?'fall':'run');if(state==='crash')rect(0,0,W,H,'#10251b44')}
 function update(dt){if(state!=='run')return;elapsed+=dt;speed=Math.min(330,175+elapsed*2.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.82,1.45-elapsed*.005)+Math.random()*.35}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);
- for(const o of obstacles){o.p+=speed*dt/(H*.92);if(!o.done&&o.p>.775&&o.p<.895&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
+ for(const o of obstacles){o.p+=speed*dt/(H*.92);if(!o.done&&o.p>.80&&o.p<.875&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
 function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw(t);requestAnimationFrame(loop)}
 heroSheet.onload=()=>{if(state==='title')drawPortrait()};title();last=performance.now();requestAnimationFrame(loop);
 })();

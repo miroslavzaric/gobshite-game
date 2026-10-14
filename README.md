@@ -1,12 +1,11 @@
-# GOBSHITE! — Prototype 0.5
-
-A visual correction pass on Prototype 0.4.
-
-- Keeps the custom PNG leprechaun and obstacle sprites.
-- Re-spaces sleepers in screen-space depth so they do not bunch up or dominate the track.
-- Reduces sleeper thickness and width, refines rail clips, and improves track readability.
-- Slightly reduces foreground obstacle scaling and improves HUD line spacing.
-- Keeps the same controls, scoring, local best score, pause and sound controls.
-
-## Deploy
-Replace the repository files with this project while preserving `public/assets/`. Commit to GitHub; Railway should redeploy using `npm start`.
+# GOBSHITE! — Prototype 0.6
+Focused visual correction release:
+- Redesigned track drawing: two steel rails with defined heads/highlights, wooden cross-sleepers with deliberate gaps, ballast and rail fasteners.
+- Sleeper count, width and thickness reduced and spaced to read as individual railway ties rather than giant bands.
+- Improved Irish countryside layers with moving clouds, mountain/hill layers, lake strip and distant castle.
+- Adjusted lane width, obstacle scaling and collision zone.
+- Retains existing transparent PNG leprechaun/obstacle assets, controls, scoring, local best score and game over flow.
+## Run
+Node.js 20+: `npm start`, open `http://localhost:3000`.
+## Railway
+Keep the existing Railway project/domain. Replace repository files with this project and commit. Railway uses `npm start` and `PORT`.
