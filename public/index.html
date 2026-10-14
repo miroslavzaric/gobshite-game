@@ -1,119 +1,100 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#124436">
-<title>GOBSHITE! — The Runaway Railway</title>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#124436"><title>GOBSHITE! — The Runaway Railway</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 :root{--green:#124436;--lime:#8ddf35;--orange:#f47735;--cream:#fff0c9}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102b20;color:var(--cream);font-family:'Press Start 2P',monospace;touch-action:none}
-#wrap{position:relative;width:100%;height:100%;display:flex;justify-content:center;background:#183e31}
-canvas{display:block;width:100%;height:100%;max-width:600px;image-rendering:pixelated}
-#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;font-size:9px;text-shadow:2px 2px #10251b;pointer-events:none}
-button{font:inherit;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12;padding:13px 12px;font-size:11px;cursor:pointer}
-#hud button{pointer-events:auto;padding:9px}
-#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(#071a1255,#071a12bb)}
-.panel{width:min(100%,410px);border:4px solid #15271d;background:#f7e6b7;color:#14251c;box-shadow:0 0 0 4px #e0a24e,8px 8px 0 #071a12;padding:20px 16px;text-align:center}
-.logo{font-size:clamp(28px,8vw,46px);line-height:1.25;letter-spacing:-3px;color:#8ddf35;text-shadow:3px 3px #174d35,6px 6px #10251b}.logo span{color:#f47735}
-.tag{font-size:8px;line-height:2.1;margin:12px auto;color:#33513c}
-.hero{height:145px;margin:6px auto 10px;display:flex;align-items:center;justify-content:center}
-.actions{display:grid;gap:10px;margin-top:12px}.sound{background:#e9d5a2}
-.small{font-size:7px;line-height:2;margin-top:12px;color:#425543}
-.hidden{display:none!important}.speech{font-size:10px;line-height:1.8;margin:14px 0}.stats{font-size:8px;line-height:2.4}
-.hint{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:7px;color:#fff0c9cc;pointer-events:none}
-@media(min-aspect-ratio:3/4){.panel{padding:13px;max-width:360px}.hero{height:110px}.tag{margin:7px}.small{margin-top:8px}}
-</style>
-</head>
-<body><main id="wrap"><canvas id="game"></canvas>
-<div id="hud"><div>DISTANCE <span id="score">0</span>m<br><span style="color:#8ddf35">BEST <span id="best">0</span>m</span></div><button id="pauseBtn">Ⅱ</button></div>
-<div id="overlay"><section class="panel" id="panel"></section></div><div class="hint" id="hint">SWIPE TO DODGE · TAP TO START</div></main>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102b20;color:var(--cream);font-family:'Press Start 2P',monospace;touch-action:none}#wrap{position:relative;width:100%;height:100%;display:flex;justify-content:center;background:#183e31}canvas#game{display:block;width:100%;height:100%;max-width:600px;image-rendering:pixelated}
+#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;font-size:9px;text-shadow:2px 2px #10251b;pointer-events:none}button{font:inherit;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12;padding:13px 12px;font-size:11px;cursor:pointer}#hud button{pointer-events:auto;padding:9px}
+#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;background:linear-gradient(#071a1240,#071a12a6)}.panel{width:min(100%,410px);max-height:96%;overflow:auto;border:4px solid #15271d;background:#f7e6b7;color:#14251c;box-shadow:0 0 0 4px #e0a24e,8px 8px 0 #071a12;padding:clamp(12px,3vh,22px) 16px;text-align:center}
+.logo{font-size:clamp(28px,8vw,46px);line-height:1.25;letter-spacing:-3px;color:#8ddf35;text-shadow:3px 3px #174d35,6px 6px #10251b}.logo span{color:#f47735}.tag{font-size:8px;line-height:2.1;margin:8px auto;color:#33513c}.hero{height:clamp(130px,22vh,190px);margin:0 auto;display:flex;align-items:center;justify-content:center}.hero canvas{width:200px;height:180px;image-rendering:pixelated}.actions{display:grid;gap:10px;margin-top:10px}.sound{background:#e9d5a2}.small{font-size:7px;line-height:2;margin-top:10px;color:#425543}.hidden{display:none!important}.speech{font-size:10px;line-height:1.8;margin:14px 0}.stats{font-size:8px;line-height:2.4}.hint{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:7px;color:#fff0c9cc;pointer-events:none}
+@media(max-height:700px){.hero{height:110px}.hero canvas{height:108px;width:150px}.tag{font-size:7px;line-height:1.8}.panel{padding:10px}.small{margin-top:6px}}
+</style></head><body><main id="wrap"><canvas id="game"></canvas><div id="hud"><div>DISTANCE <span id="score">0</span>m<br><span style="color:#8ddf35">BEST <span id="best">0</span>m</span></div><button id="pauseBtn">Ⅱ</button></div><div id="overlay"><section class="panel" id="panel"></section></div><div class="hint" id="hint">SWIPE TO DODGE · TAP TO START</div></main>
 <script>
 (()=>{
 const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),overlay=document.querySelector('#overlay'),panel=document.querySelector('#panel'),hud=document.querySelector('#hud'),scoreEl=document.querySelector('#score'),bestEl=document.querySelector('#best'),hint=document.querySelector('#hint');
-let W=390,H=844,dpr=1,state='title',last=0,elapsed=0,distance=0,best=+(localStorage.getItem('gobshite-best')||0),speed=205,lane=1,jump=0,duck=0,obstacles=[],spawnIn=1, sound=false,audio=null,dialogue='',shake=0;
+let W=390,H=844,dpr=1,state='title',last=0,elapsed=0,distance=0,best=+(localStorage.getItem('gobshite-best')||0),speed=175,lane=1,jump=0,duck=0,obstacles=[],spawnIn=1,sound=false,audio=null,dialogue='';
 bestEl.textContent=best;
 function resize(){dpr=Math.min(devicePixelRatio||1,2);const r=canvas.getBoundingClientRect();W=Math.max(300,r.width);H=Math.max(500,r.height);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}new ResizeObserver(resize).observe(canvas);resize();
-function beep(f=300,d=.08,type='square'){if(!sound)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=f;g.gain.value=.03;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.stop(audio.currentTime+d)}catch{}}
-const rand=(a,b)=>a+Math.random()*(b-a);
-function leprechaun(x,y,s=1,fall=false){
- ctx.save();ctx.translate(x,y);ctx.scale(s,s);
- // boots and legs
- rect(-17,22,13,18,'#68452e');rect(5,22,13,18,'#68452e');rect(-21,36,17,7,'#302820');rect(3,36,18,7,'#302820');
- // green coat, orange waistcoat
- rect(-20,-2,40,30,'#17603e');rect(-10,2,20,22,'#d9672d');rect(-3,5,6,5,'#f4c34f');rect(-3,14,6,5,'#f4c34f');
- // ears
- rect(-29,-27,12,15,'#f3b17d');rect(17,-27,12,15,'#f3b17d');rect(-25,-24,6,8,'#c86b52');rect(19,-24,6,8,'#c86b52');
- // face, freckles, eyes, nose, teeth
- rect(-19,-36,38,38,'#f5c18a');rect(-14,-30,7,9,'#fff8df');rect(7,-30,7,9,'#fff8df');rect(-11,-28,4,6,'#263329');rect(9,-28,4,6,'#263329');rect(-4,-20,10,8,'#ef9c61');rect(-3,-10,14,6,'#7d3027');rect(-1,-9,5,4,'#fff8df');rect(5,-9,5,4,'#fff8df');
- for(let i=0;i<6;i++)rect(-13+(i%3)*7,-18+Math.floor(i/3)*5,2,2,'#b95f45');
- // bright auburn hair and beard
- rect(-22,-41,44,10,'#b84f25');rect(-23,-34,10,13,'#d85d26');rect(13,-34,10,13,'#d85d26');rect(-19,-12,38,18,'#d85d26');rect(-14,0,28,7,'#b84f25');rect(-12,-6,6,7,'#ed7830');rect(4,-6,6,7,'#ed7830');
- // green hat and gold buckle
- rect(-26,-48,52,8,'#124436');rect(-18,-62,36,17,'#17603e');rect(-10,-68,20,8,'#28794a');rect(-2,-59,10,7,'#f4c34f');rect(0,-58,5,4,'#d18b24');rect(-27,-49,54,4,'#0a3025');
- // shamrock badge
- rect(14,-57,5,5,'#8ddf35');rect(19,-60,5,5,'#8ddf35');rect(19,-54,5,5,'#8ddf35');
- ctx.restore()
-}
 function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
-function title(){state='title';hud.style.display='none';hint.textContent='SWIPE TO DODGE · TAP TO START';panel.innerHTML=`<div class="logo">GOB<span>SHITE!</span></div><div class="hero"><canvas id="portrait" width="170" height="145" style="width:170px;height:145px;image-rendering:pixelated"></canvas></div><div class="tag">THE RUNAWAY RAILWAY<br>ONE TINY IRISH TROUBLEMAKER.<br>YOUR FAULT, APPARENTLY.</div><div style="font-size:7px;line-height:2">← → CHANGE LANE<br>↑ JUMP · ↓ DUCK</div><div class="actions"><button id="playBtn">▶ PLAY</button><button class="sound" id="soundBtn">♫ SOUND: ${sound?'ON':'OFF'}</button></div><div class="small">BEST DISTANCE: ${best}m<br>NO MERCY. JUST ONE MORE GO.</div>`;let p=document.querySelector('#portrait'),c=p.getContext('2d');c.imageSmoothingEnabled=false;c.save();c.translate(85,85); // reuse stylised pixel character in portrait canvas
- c.scale(1.35,1.35); c.fillStyle='#17603e';c.fillRect(-18,-5,36,35);c.fillStyle='#d9672d';c.fillRect(-9,0,18,22);c.fillStyle='#f5c18a';c.fillRect(-19,-40,38,39);c.fillStyle='#f5c18a';c.fillRect(-29,-28,12,14);c.fillRect(17,-28,12,14);c.fillStyle='#d85d26';c.fillRect(-21,-42,42,13);c.fillRect(-18,-13,36,23);c.fillStyle='#fff8df';c.fillRect(-12,-30,8,10);c.fillRect(5,-30,8,10);c.fillStyle='#263329';c.fillRect(-8,-27,4,6);c.fillRect(8,-27,4,6);c.fillStyle='#7d3027';c.fillRect(-4,-10,16,6);c.fillStyle='#fff8df';c.fillRect(-1,-9,6,4);c.fillRect(6,-9,6,4);c.fillStyle='#124436';c.fillRect(-27,-50,54,8);c.fillRect(-18,-64,36,18);c.fillStyle='#28794a';c.fillRect(-10,-70,20,8);c.fillStyle='#f4c34f';c.fillRect(0,-59,10,7);c.restore();
- document.querySelector('#playBtn').onclick=start;document.querySelector('#soundBtn').onclick=toggleSound;overlay.classList.remove('hidden')}
-const taunts={barrier:['Were you looking at the scenery, ya gobshite?','That barrier had the right of way. And more brains.'],sheep:['You couldnt avoid a sheep? A SHEEP!','He has more sense than you, that sheep.'],bridge:['Mind the head? What head?','A grand day to become a pancake.'],train:['Next time, try NOT meeting the train.','I specifically ordered the small train.'],rock:['Rock. You see rock. You hit rock. Jaysus.'],log:['Timber! No, wait. That was you.']};
-function start(){state='run';elapsed=distance=0;speed=205;lane=1;jump=duck=0;obstacles=[];spawnIn=.8;overlay.classList.add('hidden');hud.style.display='flex';hint.textContent='';last=performance.now();beep(540)}
+function poly(points,fill,stroke=null,lw=1){ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+function drawLeprechaun(c,x,y,scale=1,pose='run'){
+ c.save();c.translate(x,y);c.scale(scale,scale);
+ const legSwing=pose==='run'?Math.sin(elapsed*13)*5:0;
+ // boots/legs
+ rect(-13,16+legSwing,10,19,'#68432a');rect(4,16-legSwing,10,19,'#68432a');rect(-17,32+legSwing,16,6,'#302820');rect(2,32-legSwing,17,6,'#302820');
+ // coat, arms and hands
+ rect(-18,-8,36,29,'#17603e');rect(-24,-5,8,19,'#124436');rect(16,-5,8,19,'#124436');rect(-25,10,9,7,'#f1b984');rect(16,10,9,7,'#f1b984');
+ // orange waistcoat, buttons, collar
+ poly([[-8,-7],[0,-2],[8,-7],[10,18],[-10,18]],'#d9672d');rect(-2,2,4,4,'#f4c34f');rect(-2,10,4,4,'#f4c34f');
+ // ears
+ poly([[-17,-34],[-32,-30],[-22,-17],[-15,-20]],'#f2b780','#a8563c',1);poly([[17,-34],[32,-30],[22,-17],[15,-20]],'#f2b780','#a8563c',1);rect(-26,-29,7,3,'#c86b52');rect(19,-29,7,3,'#c86b52');
+ // face and hair fringe
+ rect(-18,-42,36,35,'#f5c18a');rect(-20,-42,8,14,'#d85d26');rect(12,-43,8,15,'#d85d26');rect(-15,-48,30,11,'#b84f25');rect(-11,-41,8,6,'#ed7830');rect(1,-43,9,7,'#ed7830');
+ // eyebrows, whites, pupils
+ rect(-12,-34,9,3,'#733a23');rect(4,-34,9,3,'#733a23');rect(-11,-30,8,9,'#fff8df');rect(4,-30,8,9,'#fff8df');rect(-8,-27,4,6,'#263329');rect(7,-27,4,6,'#263329');
+ // nose and smile with teeth
+ rect(-3,-22,10,7,'#e99a63');rect(-5,-16,18,8,'#7d3027');rect(-3,-15,6,4,'#fff8df');rect(4,-15,6,4,'#fff8df');
+ // freckles
+ for(const [fx,fy] of [[-13,-20],[-10,-18],[-14,-16],[12,-20],[15,-18],[12,-16]])rect(fx,fy,2,2,'#b95f45');
+ // unmistakable full bushy orange beard
+ poly([[-17,-16],[-11,-12],[-13,-3],[-7,2],[0,7],[7,2],[13,-3],[11,-12],[17,-16],[15,-5],[10,4],[0,11],[-10,4],[-15,-5]],'#d85d26','#9e421e',1);
+ rect(-9,-3,6,6,'#ed7830');rect(4,-3,6,6,'#ed7830');
+ // hat: tall crown, wide brim, band, buckle, shamrock
+ rect(-24,-54,48,7,'#124436');rect(-18,-72,36,20,'#17603e');rect(-12,-78,24,8,'#28794a');rect(-18,-56,36,4,'#0a3025');rect(1,-55,10,8,'#f4c34f');rect(3,-53,6,4,'#d18b24');
+ // shamrock hat badge
+ rect(12,-67,5,5,'#8ddf35');rect(17,-70,5,5,'#8ddf35');rect(17,-64,5,5,'#8ddf35');rect(21,-67,4,4,'#8ddf35');
+ // collar and boot buckles
+ rect(-11,-8,7,4,'#8ddf35');rect(4,-8,7,4,'#8ddf35');rect(-12,33,5,3,'#e8ba56');rect(7,33,5,3,'#e8ba56');
+ c.restore()
+}
+function drawPortrait(){let p=document.querySelector('#portrait');if(!p)return;let c=p.getContext('2d');c.imageSmoothingEnabled=false;c.clearRect(0,0,p.width,p.height);c.save();c.translate(p.width/2,p.height*.78);drawLeprechaun(c,0,0,1.65,'idle');c.restore()}
+function title(){state='title';hud.style.display='none';hint.textContent='SWIPE TO DODGE · TAP TO START';panel.innerHTML=`<div class="logo">GOB<span>SHITE!</span></div><div class="hero"><canvas id="portrait" width="220" height="190"></canvas></div><div class="tag">THE RUNAWAY RAILWAY<br>ONE TINY IRISH TROUBLEMAKER.<br>YOUR FAULT, APPARENTLY.</div><div style="font-size:7px;line-height:2">← → CHANGE LANE<br>↑ JUMP · ↓ DUCK</div><div class="actions"><button id="playBtn">▶ PLAY</button><button class="sound" id="soundBtn">♫ SOUND: ${sound?'ON':'OFF'}</button></div><div class="small">BEST DISTANCE: ${best}m<br>NO MERCY. JUST ONE MORE GO.</div>`;drawPortrait();document.querySelector('#playBtn').onclick=start;document.querySelector('#soundBtn').onclick=toggleSound;overlay.classList.remove('hidden')}
+function beep(f=300,d=.08){if(!sound)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type='square';o.frequency.value=f;g.gain.value=.025;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.stop(audio.currentTime+d)}catch{}}
 function toggleSound(){sound=!sound;let b=document.querySelector('#soundBtn');if(b)b.textContent='♫ SOUND: '+(sound?'ON':'OFF');beep(440)}
-function spawn(){let r=Math.random(),type=elapsed>18&&r<.08?'train':r<.22?'sheep':r<.38?'barrier':r<.53?'bridge':r<.72?'rock':'log',ln=Math.floor(Math.random()*3);obstacles.push({type,lane:ln,p:0,done:false})}
-function crash(o){if(state!=='run')return;state='crash';let arr=taunts[o.type]||taunts.barrier;dialogue=arr[Math.floor(Math.random()*arr.length)];if(distance>best){best=Math.floor(distance);localStorage.setItem('gobshite-best',best)}setTimeout(()=>{if(state==='crash')gameOver()},500)}
+const taunts={barrier:['Were you looking at the scenery, ya gobshite?','That barrier had the right of way. And more brains.'],sheep:['You couldnt avoid a sheep? A SHEEP!','He has more sense than you, that sheep.'],bridge:['Mind the head? What head?','A grand day to become a pancake.'],train:['Next time, try NOT meeting the train.','I specifically ordered the small train.'],rock:['Rock. You see rock. You hit rock. Jaysus.'],log:['Timber! No, wait. That was you.']};
+function start(){state='run';elapsed=distance=0;speed=175;lane=1;jump=duck=0;obstacles=[];spawnIn=.8;overlay.classList.add('hidden');hud.style.display='flex';hint.textContent='';last=performance.now();beep(540)}
+function spawn(){let r=Math.random(),type= r<.18?'sheep':r<.34?'barrier':r<.47?'bridge':r<.67?'rock':'log';if(elapsed>18&&r<.06)type='train';let ln=Math.floor(Math.random()*3);obstacles.push({type,lane:ln,p:0,done:false})}
+function crash(o){if(state!=='run')return;state='crash';let a=taunts[o.type]||taunts.barrier;dialogue=a[Math.floor(Math.random()*a.length)];if(distance>best){best=Math.floor(distance);localStorage.setItem('gobshite-best',best)}setTimeout(()=>{if(state==='crash')gameOver()},420)}
 function gameOver(){overlay.classList.remove('hidden');panel.innerHTML=`<div class="logo">AH, <span>GOBSHITE!</span></div><div class="speech">“${dialogue}”</div><div class="stats">DISTANCE: ${Math.floor(distance)}m<br>BEST: ${best}m</div><div class="actions"><button id="again">↻ TRY AGAIN</button><button class="sound" id="home">TITLE SCREEN</button></div>`;document.querySelector('#again').onclick=start;document.querySelector('#home').onclick=title}
 function pause(){if(state==='run'){state='pause';panel.innerHTML=`<div class="logo">TAKE A <span>BREATHER</span></div><div class="actions"><button id="resume">RESUME</button><button class="sound" id="restart">RESTART RUN</button><button class="sound" id="home">TITLE SCREEN</button></div>`;overlay.classList.remove('hidden');document.querySelector('#resume').onclick=()=>{state='run';overlay.classList.add('hidden');last=performance.now()};document.querySelector('#restart').onclick=start;document.querySelector('#home').onclick=title}}
 document.querySelector('#pauseBtn').onclick=pause;
-function move(a){if(state!=='run')return;if(a==='left')lane=Math.max(0,lane-1);if(a==='right')lane=Math.min(2,lane+1);if(a==='jump'&&!jump&&!duck)jump=.65;if(a==='duck'&&!jump)duck=.6}
+function move(a){if(state!=='run')return;if(a==='left')lane=Math.max(0,lane-1);if(a==='right')lane=Math.min(2,lane+1);if(a==='jump'&&!jump&&!duck)jump=.72;if(a==='duck'&&!jump)duck=.65}
 let sx=0,sy=0;canvas.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});canvas.addEventListener('pointerup',e=>{let dx=e.clientX-sx,dy=e.clientY-sy;if(state==='title'){start();return}if(state!=='run'||Math.max(Math.abs(dx),Math.abs(dy))<18)return;if(Math.abs(dx)>Math.abs(dy))move(dx<0?'left':'right');else move(dy<0?'jump':'duck')});
 window.addEventListener('keydown',e=>{if(state==='title'&&(e.key===' '||e.key==='Enter'))start();else if(e.key==='ArrowLeft'||e.key==='a')move('left');else if(e.key==='ArrowRight'||e.key==='d')move('right');else if(e.key==='ArrowUp'||e.key==='w')move('jump');else if(e.key==='ArrowDown'||e.key==='s')move('duck');else if(e.key==='Escape')pause()});
-function trackGeometry(p){ // p=0 horizon, p=1 foreground; track edges converge to vanishing point
- const y=H*(.34+p*p*.66), half=W*(.10+p*.50);return {y,left:W/2-half,right:W/2+half,half}}
+function geom(p){let y=H*(.32+p*p*.68),half=W*(.075+p*.48);return{y,half,left:W/2-half,right:W/2+half}}
 function drawTrack(t){
- // countryside sky
- rect(0,0,W,H,'#78c9e8');rect(0,H*.28,W,H*.24,'#4b9b64');
- ctx.fillStyle='#8acb5a';ctx.beginPath();ctx.moveTo(0,H*.36);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H*.28+Math.sin(x*.018+t*.0002)*18);ctx.lineTo(W,H*.62);ctx.lineTo(0,H*.62);ctx.fill();
- // distant castle
- rect(W*.73,H*.20,22,36,'#a5a58b');rect(W*.77,H*.16,10,22,'#8b907c');rect(W*.70,H*.24,9,29,'#9b9d87');
- // gravel track bed
- ctx.fillStyle='#776b57';ctx.beginPath();ctx.moveTo(W*.42,H*.34);ctx.lineTo(W*.58,H*.34);ctx.lineTo(W*1.12,H);ctx.lineTo(-W*.12,H);ctx.closePath();ctx.fill();
- // ballast stones in track bed
- for(let i=0;i<180;i++){let p=((i/180+t*.00008)%1),g=trackGeometry(p);let x=W/2+rand(-g.half*.87,g.half*.87);rect(x,g.y,Math.max(1,p*3),Math.max(1,p*2),i%3?'#9a8b70':'#514d43')}
- // real steel rails: dark web, steel body, bright inner highlight; sleepers cross beneath both rails
- for(let i=0;i<25;i++){let p=((i/25+t*.00023)%1),g=trackGeometry(p),th=2+p*5,sl=g.half*.88;ctx.fillStyle='#523c2b';ctx.beginPath();ctx.moveTo(W/2-sl,g.y);ctx.lineTo(W/2+sl,g.y);ctx.lineWidth=2+p*11;ctx.strokeStyle='#65432c';ctx.beginPath();ctx.moveTo(W/2-sl,g.y);ctx.lineTo(W/2+sl,g.y);ctx.stroke();ctx.strokeStyle='#a9774c';ctx.lineWidth=1+p*6;ctx.beginPath();ctx.moveTo(W/2-sl,g.y-1);ctx.lineTo(W/2+sl,g.y-1);ctx.stroke()}
- for(let side of [-1,1]){ctx.beginPath();ctx.moveTo(W/2+side*W*.08,H*.34);ctx.lineTo(W/2+side*W*.60,H);ctx.lineWidth=8;ctx.strokeStyle='#333d3c';ctx.stroke();ctx.beginPath();ctx.moveTo(W/2+side*W*.08,H*.34);ctx.lineTo(W/2+side*W*.60,H);ctx.lineWidth=5;ctx.strokeStyle='#9da9a6';ctx.stroke();ctx.beginPath();ctx.moveTo(W/2+side*W*.08,H*.34);ctx.lineTo(W/2+side*W*.60,H);ctx.lineWidth=1.5;ctx.strokeStyle='#f2ead2';ctx.stroke()}
- // sleepers are redrawn on top of rails so they visibly pass underneath
- for(let i=0;i<19;i++){let p=((i/19+t*.00023)%1),g=trackGeometry(p),half=g.half*.91,th=2+p*10;ctx.strokeStyle='#3e2c23';ctx.lineWidth=th+2;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();ctx.strokeStyle='#8c5734';ctx.lineWidth=th;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();ctx.strokeStyle='#c28b53';ctx.lineWidth=Math.max(1,th*.18);ctx.beginPath();ctx.moveTo(W/2-half,g.y-th*.3);ctx.lineTo(W/2+half,g.y-th*.3);ctx.stroke();
- // rail fasteners where sleeper meets rail
- for(let side of [-1,1]){let x=W/2+side*g.half*.5;rect(x-th*.5,g.y-th*.45,Math.max(2,th*.38),Math.max(2,th*.35),'#343b39')}
- }
- // stone walls and flowers
- for(let i=0;i<14;i++){let p=((i/14+t*.00013)%1),g=trackGeometry(p),y=g.y,sz=.5+p;rect(W*.02,y,16*sz,5*sz,'#778675');rect(W*.93-16*sz,y,16*sz,5*sz,'#778675');if(i%3===0){rect(W*.1,y-4*sz,3*sz,3*sz,'#ffcc68');rect(W*.87,y-3*sz,3*sz,3*sz,'#f4a6a2')}}
+ // sky and Irish hills
+ rect(0,0,W,H,'#6dbbd7');poly([[0,H*.34],[W*.18,H*.27],[W*.35,H*.32],[W*.53,H*.25],[W*.74,H*.32],[W,H*.26],[W,H*.55],[0,H*.55]],'#4f8f58');poly([[0,H*.43],[W*.22,H*.35],[W*.42,H*.4],[W*.7,H*.33],[W,H*.4],[W,H*.59],[0,H*.59]],'#6ea34d');
+ // distant lake and castle
+ rect(0,H*.31,W,H*.08,'#4d9fc0');rect(W*.74,H*.20,8,H*.08,'#aaa58c');rect(W*.77,H*.17,8,H*.11,'#9b9c86');rect(W*.80,H*.22,9,H*.06,'#aaa58c');rect(W*.765,H*.24,3,H*.02,'#373c32');rect(W*.79,H*.21,3,H*.02,'#373c32');
+ // embankment, ballast base
+ poly([[W*.42,H*.32],[W*.58,H*.32],[W*1.12,H],[-W*.12,H]],'#66594a');
+ // stones on ballast, deterministic placement to avoid flicker
+ for(let i=0;i<220;i++){let p=((i*.618+t*.00008)%1),g=geom(p),seed=i*37%101/101,x=W/2+(seed*2-1)*g.half*.84,s=.8+p*2.4;rect(x,g.y,s*1.6,s,'#8e826d');rect(x+s*.3,g.y+s*.2,s*.6,s*.4,'#b0a087')}
+ // rails: dark steel base, silver surface, highlight. Real pair, continuous perspective.
+ for(let side of [-1,1]){let x0=W/2+side*W*.075,x1=W/2+side*W*.56;ctx.lineCap='butt';ctx.strokeStyle='#303a39';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#8e9b98';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#e2e5d8';ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(x0-side*1.3,H*.32);ctx.lineTo(x1-side*1.3,H);ctx.stroke();ctx.strokeStyle='#596764';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0+side*2,H*.32);ctx.lineTo(x1+side*2,H);ctx.stroke()}
+ // cross sleepers laid underneath rails; nearest ones wider and thicker
+ for(let i=0;i<24;i++){let p=((i/24+t*.00024)%1),g=geom(p),half=g.half*.94,th=1.5+p*10;ctx.strokeStyle='#342820';ctx.lineWidth=th+2;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();ctx.strokeStyle='#875333';ctx.lineWidth=th;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();ctx.strokeStyle='#c28a51';ctx.lineWidth=Math.max(1,th*.16);ctx.beginPath();ctx.moveTo(W/2-half,g.y-th*.25);ctx.lineTo(W/2+half,g.y-th*.25);ctx.stroke();
+ // sleepers show rail clips where they cross rail positions
+ for(let side of [-1,1]){let rx=W/2+side*g.half*.5;rect(rx-th*.3,g.y-th*.38,Math.max(2,th*.38),Math.max(2,th*.28),'#343b39');rect(rx-th*.12,g.y-th*.35,Math.max(1,th*.14),Math.max(1,th*.16),'#d0b889')}}
+ // low stone walls either side of the track
+ for(let i=0;i<15;i++){let p=((i/15+t*.00013)%1),g=geom(p),s=.4+p*.8;rect(W*.015,g.y,18*s,6*s,'#788474');rect(W*.94-18*s,g.y,18*s,6*s,'#788474');rect(W*.015,g.y,18*s,1.5*s,'#a8a28c');rect(W*.94-18*s,g.y,18*s,1.5*s,'#a8a28c')}
 }
-function lanePos(ln,p){let g=trackGeometry(p);return W/2+(ln-1)*g.half*.48}
-function drawObstacle(o){let p=o.p,g=trackGeometry(p),x=lanePos(o.lane,p),y=g.y,sc=.35+p*.8;ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);
- // Draw grounded objects on the track surface. Their bottom edge sits at sleeper level.
- if(o.type==='barrier'){rect(-31,-35,62,10,'#f1e4c8');for(let i=0;i<5;i++)rect(-29+i*13,-35,7,10,'#d84531');rect(-29,-25,6,25,'#5c402b');rect(23,-25,6,25,'#5c402b');rect(-34,-39,68,5,'#9ca5a0')}
- else if(o.type==='bridge'){rect(-40,-54,80,12,'#536b50');rect(-35,-48,70,8,'#8da37b');rect(-38,-40,9,40,'#536b50');rect(29,-40,9,40,'#536b50');rect(-18,-42,36,9,'#78c9e8')}
+function laneX(ln,p){let g=geom(p);return W/2+(ln-1)*g.half*.52}
+function obstacleDraw(o){let p=o.p,g=geom(p),x=laneX(o.lane,p),y=g.y,s=.26+p*.86;ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+ // Ground contact point is y=0: each obstacle is built upwards from the sleeper/ballast surface.
+ if(o.type==='barrier'){rect(-31,-35,62,10,'#f4e8ce');for(let i=0;i<5;i++)rect(-29+i*13,-35,7,10,'#d84531');rect(-29,-25,6,25,'#5c402b');rect(23,-25,6,25,'#5c402b');rect(-34,-39,68,5,'#aeb8b3')}
+ else if(o.type==='bridge'){rect(-43,-55,86,13,'#4d6149');rect(-38,-48,76,8,'#819a70');rect(-41,-40,10,40,'#4d6149');rect(31,-40,10,40,'#4d6149');rect(-18,-42,36,9,'#6dbbd7')}
  else if(o.type==='sheep'){rect(-23,-34,46,27,'#fff1d6');rect(-19,-40,15,13,'#fff1d6');rect(3,-40,15,13,'#fff1d6');rect(16,-31,13,17,'#382c26');rect(20,-27,3,3,'#fff');rect(-14,-7,5,7,'#41332b');rect(9,-7,5,7,'#41332b')}
- else if(o.type==='rock'){rect(-24,-28,45,26,'#727d78');rect(-15,-39,24,14,'#8c9890');rect(-20,-5,35,5,'#535f59')}
+ else if(o.type==='rock'){poly([[-24,0],[-24,-18],[-13,-35],[3,-39],[22,-23],[24,0]],'#747f79','#3d4b44',2);poly([[-13,-23],[-7,-31],[3,-34],[0,-25]],'#aab1a5')}
  else if(o.type==='log'){rect(-35,-24,70,22,'#8a542e');rect(-32,-22,9,18,'#c18a4b');rect(23,-22,9,18,'#c18a4b');rect(-17,-20,3,14,'#5d371f');rect(8,-20,3,14,'#5d371f')}
  else if(o.type==='train'){rect(-29,-57,58,56,'#263c32');rect(-23,-50,46,25,'#d84631');rect(-18,-45,11,11,'#b9e7e8');rect(5,-45,11,11,'#b9e7e8');rect(-15,-22,30,8,'#1d2520');rect(-24,-9,48,7,'#171e19');rect(-20,-1,10,5,'#1d2520');rect(10,-1,10,5,'#1d2520');rect(-7,-68,14,12,'#2b332d');rect(-6,-78,12,10,'#f2e5b9')}
  ctx.restore()}
-function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){leprechaun(W/2,H*.75,1.15);return} // far obstacles first, nearer obstacles last
- for(const o of [...obstacles].sort((a,b)=>a.p-b.p))drawObstacle(o);
- let py=H*.79-jump*H*.33;if(duck>0)py+=12;leprechaun(lanePos(lane,.82),py,Math.min(1.5,W/390)*(duck>0?.72:1),state==='crash');
- if(state==='crash'){rect(0,0,W,H,'#10251b44')}
-}
-function update(dt){if(state==='run'){elapsed+=dt;speed=Math.min(390,205+elapsed*3.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.62,1.25-elapsed*.007)+Math.random()*.3}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);
- for(const o of obstacles){o.p+=speed*dt/(H*.9); // collision uses same projected position and the visible ground contact point
- if(!o.done&&o.p>.76&&o.p<.91&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}
- if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
-}
+function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){drawLeprechaun(ctx,W/2,H*.75,1.2,'idle');return}for(const o of [...obstacles].sort((a,b)=>a.p-b.p))obstacleDraw(o);let py=H*.79-jump*H*.34;if(duck>0)py+=12;drawLeprechaun(ctx,laneX(lane,.82),py,Math.min(1.4,W/390)*(duck>0?.76:1),state==='crash'?'fall':'run');if(state==='crash')rect(0,0,W,H,'#10251b44')}
+function update(dt){if(state!=='run')return;elapsed+=dt;speed=Math.min(330,175+elapsed*2.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.82,1.45-elapsed*.005)+Math.random()*.35}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);
+ for(const o of obstacles){o.p+=speed*dt/(H*.92);if(!o.done&&o.p>.775&&o.p<.895&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
 function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw(t);requestAnimationFrame(loop)}
 title();last=performance.now();requestAnimationFrame(loop);
 })();
