@@ -1,16 +1,21 @@
-# GOBSHITE! — Prototype 0.7
+# GOBSHITE! — The Runaway Railway (Prototype 0.8)
 
-Mobile-first Irish railway endless runner.
+Mobile-first browser endless runner.
 
 ## Run
 - Node.js 20+
+- `npm install` (no external dependencies required)
 - `npm start`
-- Server listens on `process.env.PORT` and `0.0.0.0` for Railway.
 
-## Deploy
-Replace the repository files with this package, including the complete `public/assets` directory. Commit and push; Railway should redeploy automatically.
+## Controls
+- Swipe left/right: change lane
+- Swipe up: jump
+- Swipe down: duck
+- Keyboard: arrows or WASD; Escape pauses
 
-## 0.7 changes
-- Expanded layered Irish countryside: distant mountains, patchwork hills, lake, stone viaduct, castle, trees, sheep and flowers.
-- Improved track bed, timber sleeper shading, rail highlights and trackside stone edging.
-- Retains existing character/obstacle sprites and mobile swipe controls.
+## 0.8 visual update
+- Reworked the gameplay environment with layered blue mountains, rolling Irish hills, a lake, a distant stone viaduct and castle silhouette.
+- Added denser trackside greenery, wildflowers, stone wall details, richer ballast, sleeper shading and rail highlights.
+- Preserves the existing character, obstacle sprites, scoring, controls and title/menu flow.
+
+This remains a code-rendered scene, not a full hand-painted background replacement. The scene should be checked in a live mobile browser after deployment.
