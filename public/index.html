@@ -1,66 +1,120 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#102b20"><meta name="description" content="GOBSHITE! — a cheeky Irish pixel-art arcade runner."><title>GOBSHITE! — One tiny Irish troublemaker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#124436">
+<title>GOBSHITE! — The Runaway Railway</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-:root{--green:#174d35;--lime:#b8ef54;--orange:#ff9b42;--cream:#fff0c9;--ink:#14251c}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102b20;color:var(--cream);font-family:'Press Start 2P',monospace;touch-action:none}button{font:inherit;cursor:pointer;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12, inset 0 2px #e7ffb4;padding:14px 12px;font-size:12px}button:active{transform:translateY(3px);box-shadow:0 2px 0 #0a1a12}#wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 25%,#2e7650,#102b20 75%)}canvas{display:block;width:100%;height:100%;max-width:600px;object-fit:contain;image-rendering:pixelated}#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;pointer-events:none;font-size:10px;text-shadow:2px 2px #10251b}#hud button{pointer-events:auto;padding:9px;font-size:10px}#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(#071a1277,#071a12bb)}.panel{width:min(100%,420px);border:4px solid #15271d;background:#f7e6b7;color:var(--ink);box-shadow:0 0 0 4px #e0a24e,8px 8px 0 #071a12;padding:22px 18px;text-align:center}.logo{font-size:clamp(27px,8vw,48px);line-height:1.25;letter-spacing:-3px;color:var(--lime);text-shadow:3px 3px #174d35,6px 6px #10251b,-1px -1px #10251b}.logo span{color:var(--orange)}.tag{font-size:9px;line-height:2.1;margin:17px auto;color:#33513c}.hero{font-size:70px;line-height:1.3;filter:drop-shadow(4px 5px 0 #b77a37);margin:10px}.controls{font-size:8px;line-height:2.2;margin:16px 0}.actions{display:grid;gap:12px;margin-top:18px}.small{font-size:8px;line-height:2;color:#425543;margin-top:16px}.hidden{display:none!important}.speech{font-size:11px;line-height:1.8;margin:14px 0 18px}.stats{font-size:9px;line-height:2.4;margin:10px 0}.sound{background:#e9d5a2}.mobile-hint{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:8px;color:#fff0c9cc;pointer-events:none}@media(min-aspect-ratio:3/4){canvas{height:100%;width:auto;max-width:100vw}#overlay{padding:12px}.panel{padding:14px;max-width:360px}.hero{font-size:48px}.tag{margin:8px}.controls{margin:8px}}
-</style></head>
-<body><main id="wrap"><canvas id="game" aria-label="GOBSHITE arcade game"></canvas>
-<div id="hud"><div>DISTANCE <span id="score">0</span>m<br><span style="color:#b8ef54">BEST <span id="best">0</span>m</span></div><button id="pauseBtn" aria-label="Pause">Ⅱ</button></div>
-<div id="overlay"><section class="panel" id="panel"><div class="logo">GOB<span>SHITE!</span></div><div class="hero">🧝</div><div class="tag">ONE TINY IRISH TROUBLEMAKER.<br>ONE VERY BAD DAY.<br>YOUR FAULT, APPARENTLY.</div><div class="controls">SWIPE ← → CHANGE TRACK<br>SWIPE ↑ JUMP · SWIPE ↓ DUCK</div><div class="actions"><button id="playBtn">▶ PLAY</button><button class="sound" id="soundBtn">♫ SOUND: OFF</button></div><div class="small">NO DOWNLOAD. NO MERCY. JUST ONE MORE GO.</div></section></div>
-<div class="mobile-hint" id="hint">SWIPE TO DODGE · TAP TO START</div></main>
+:root{--green:#124436;--lime:#8ddf35;--orange:#f47735;--cream:#fff0c9}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102b20;color:var(--cream);font-family:'Press Start 2P',monospace;touch-action:none}
+#wrap{position:relative;width:100%;height:100%;display:flex;justify-content:center;background:#183e31}
+canvas{display:block;width:100%;height:100%;max-width:600px;image-rendering:pixelated}
+#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;font-size:9px;text-shadow:2px 2px #10251b;pointer-events:none}
+button{font:inherit;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12;padding:13px 12px;font-size:11px;cursor:pointer}
+#hud button{pointer-events:auto;padding:9px}
+#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(#071a1255,#071a12bb)}
+.panel{width:min(100%,410px);border:4px solid #15271d;background:#f7e6b7;color:#14251c;box-shadow:0 0 0 4px #e0a24e,8px 8px 0 #071a12;padding:20px 16px;text-align:center}
+.logo{font-size:clamp(28px,8vw,46px);line-height:1.25;letter-spacing:-3px;color:#8ddf35;text-shadow:3px 3px #174d35,6px 6px #10251b}.logo span{color:#f47735}
+.tag{font-size:8px;line-height:2.1;margin:12px auto;color:#33513c}
+.hero{height:145px;margin:6px auto 10px;display:flex;align-items:center;justify-content:center}
+.actions{display:grid;gap:10px;margin-top:12px}.sound{background:#e9d5a2}
+.small{font-size:7px;line-height:2;margin-top:12px;color:#425543}
+.hidden{display:none!important}.speech{font-size:10px;line-height:1.8;margin:14px 0}.stats{font-size:8px;line-height:2.4}
+.hint{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:7px;color:#fff0c9cc;pointer-events:none}
+@media(min-aspect-ratio:3/4){.panel{padding:13px;max-width:360px}.hero{height:110px}.tag{margin:7px}.small{margin-top:8px}}
+</style>
+</head>
+<body><main id="wrap"><canvas id="game"></canvas>
+<div id="hud"><div>DISTANCE <span id="score">0</span>m<br><span style="color:#8ddf35">BEST <span id="best">0</span>m</span></div><button id="pauseBtn">Ⅱ</button></div>
+<div id="overlay"><section class="panel" id="panel"></section></div><div class="hint" id="hint">SWIPE TO DODGE · TAP TO START</div></main>
 <script>
 (()=>{
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');const overlay=document.getElementById('overlay'),panel=document.getElementById('panel'),hud=document.getElementById('hud'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),hint=document.getElementById('hint');
-let W=390,H=844,dpr=1,state='title',last=0,elapsed=0,distance=0,best=Number(localStorage.getItem('gobshite-best')||0),speed=210,lane=1,playerY=0,jump=0,duck=0,obstacles=[],spawnIn=1.1,particles=[],sound=false,audio=null,dialogue='',hitType='barrier',shake=0,nearMissAt=0;
+const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),overlay=document.querySelector('#overlay'),panel=document.querySelector('#panel'),hud=document.querySelector('#hud'),scoreEl=document.querySelector('#score'),bestEl=document.querySelector('#best'),hint=document.querySelector('#hint');
+let W=390,H=844,dpr=1,state='title',last=0,elapsed=0,distance=0,best=+(localStorage.getItem('gobshite-best')||0),speed=205,lane=1,jump=0,duck=0,obstacles=[],spawnIn=1, sound=false,audio=null,dialogue='',shake=0;
 bestEl.textContent=best;
-function resize(){dpr=Math.min(devicePixelRatio||1,2);const r=canvas.getBoundingClientRect();W=Math.max(300,r.width);H=Math.max(500,r.height);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}new ResizeObserver(resize).observe(canvas);resize();
-function beep(freq=300,dur=.08,type='square'){if(!sound)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.value=.035;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+dur);o.stop(audio.currentTime+dur)}catch{}}
-function rnd(a,b){return a+Math.random()*(b-a)}
-function start(){state='run';elapsed=0;distance=0;speed=205;lane=1;jump=duck=0;obstacles=[];particles=[];spawnIn=.7;dialogue='';overlay.classList.add('hidden');hud.style.display='flex';hint.textContent='';last=performance.now();beep(540,.08)}
-const lines={barrier:['Ah, grand. A head like a turnip.','Were you looking at the scenery, ya gobshite?','That sign was taller than your brain.'],sheep:["You couldn't avoid a sheep? A SHEEP!",'He has more sense than you, that sheep.','I blame the sheep. And somehow, still you.'],bridge:['Brilliant. Absolutely brilliant.','Mind the head? What head?','A grand day to become a pancake.'],train:['Were you trying to get yourself turned into a tin of beans?','Next time, try NOT meeting the train.','I specifically ordered the small train.'],rock:['Rock. You. See rock. You hit rock. Jaysus.','A mighty plan. A terrible brain.'],log:['Timber! No, wait. That was you.','You jumped like a wet sock.']};
-function crash(o){if(state!=='run')return;state='crash';hitType=o.type;dialogue=(lines[o.type]||lines.barrier)[Math.floor(Math.random()*(lines[o.type]||lines.barrier).length)];shake=12;beep(100,.22,'sawtooth');for(let i=0;i<18;i++)particles.push({x:W/2+rnd(-30,30),y:H*.67,vx:rnd(-130,130),vy:rnd(-220,40),life:rnd(.35,.8),c:i%2?'#ff9b42':'#fff0c9'});if(Math.floor(distance)>best){best=Math.floor(distance);localStorage.setItem('gobshite-best',best);bestEl.textContent=best}setTimeout(()=>{if(state==='crash')showGameOver()},650)}
-function showGameOver(){overlay.classList.remove('hidden');panel.innerHTML=`<div class="logo">OHHH <span>GOBSHITE!</span></div><div class="hero" style="font-size:58px">🤕</div><div class="speech">“${dialogue}”</div><div class="stats">DISTANCE: ${Math.floor(distance)}m<br>PERSONAL BEST: ${best}m</div><div class="actions"><button id="againBtn">↻ TRY AGAIN</button><button class="sound" id="homeBtn">TITLE SCREEN</button></div><div class="small">GO ON. I'LL GIVE YA ANOTHER CHANCE.</div>`;document.getElementById('againBtn').onclick=start;document.getElementById('homeBtn').onclick=title}
-function title(){state='title';hud.style.display='none';hint.textContent='SWIPE TO DODGE · TAP TO START';panel.innerHTML=`<div class="logo">GOB<span>SHITE!</span></div><div class="hero">🧝</div><div class="tag">ONE TINY IRISH TROUBLEMAKER.<br>ONE VERY BAD DAY.<br>YOUR FAULT, APPARENTLY.</div><div class="controls">SWIPE ← → CHANGE TRACK<br>SWIPE ↑ JUMP · SWIPE ↓ DUCK</div><div class="actions"><button id="playBtn">▶ PLAY</button><button class="sound" id="soundBtn">♫ SOUND: ${sound?'ON':'OFF'}</button></div><div class="small">BEST DISTANCE: ${best}m<br>NO DOWNLOAD. NO MERCY. JUST ONE MORE GO.</div>`;document.getElementById('playBtn').onclick=start;document.getElementById('soundBtn').onclick=toggleSound;overlay.classList.remove('hidden')}
-function toggleSound(){sound=!sound;const b=document.getElementById('soundBtn');if(b)b.textContent='♫ SOUND: '+(sound?'ON':'OFF');beep(440,.07)}document.getElementById('playBtn').onclick=start;document.getElementById('soundBtn').onclick=toggleSound;
-function spawn(){let type;const r=Math.random();if(elapsed>18&&r<.13)type='train';else if(r<.24)type='sheep';else if(r<.43)type='barrier';else if(r<.60)type='bridge';else if(r<.75)type='rock';else type='log';let ln=Math.floor(Math.random()*3);obstacles.push({type,lane:ln,y:-50,done:false,passed:false,w:type==='train'?62:48,h:type==='bridge'?44:40});if(type==='train')obstacles[obstacles.length-1].lane=lane===1?(Math.random()<.5?0:2):1}
-function move(action){if(state!=='run')return;if(action==='left')lane=Math.max(0,lane-1);if(action==='right')lane=Math.min(2,lane+1);if(action==='jump'&&jump<=0&&duck<=0){jump=.62;beep(520,.06)}if(action==='duck'&&jump<=0){duck=.58;beep(220,.05)}}
-let sx=0,sy=0;canvas.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});canvas.addEventListener('pointerup',e=>{if(state==='title'){start();return}if(state!=='run')return;let dx=e.clientX-sx,dy=e.clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))<18)return;if(Math.abs(dx)>Math.abs(dy))move(dx<0?'left':'right');else move(dy<0?'jump':'duck')});window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','Escape'].includes(e.key))e.preventDefault();if(state==='title'&&(e.key===' '||e.key==='Enter'))start();else if(e.key==='ArrowLeft'||e.key==='a')move('left');else if(e.key==='ArrowRight'||e.key==='d')move('right');else if(e.key==='ArrowUp'||e.key==='w')move('jump');else if(e.key==='ArrowDown'||e.key==='s')move('duck');else if(e.key==='Escape'&&state==='run')pause()});
-function pause(){if(state==='run'){state='pause';panel.innerHTML=`<div class="logo">TAKE A <span>BREATHER</span></div><div class="hero">😏</div><div class="actions"><button id="resumeBtn">RESUME</button><button class="sound" id="restartBtn">RESTART RUN</button><button class="sound" id="quitBtn">TITLE SCREEN</button></div>`;overlay.classList.remove('hidden');document.getElementById('resumeBtn').onclick=()=>{state='run';overlay.classList.add('hidden');last=performance.now()};document.getElementById('restartBtn').onclick=start;document.getElementById('quitBtn').onclick=title}}
-document.getElementById('pauseBtn').onclick=pause;
+function resize(){dpr=Math.min(devicePixelRatio||1,2);const r=canvas.getBoundingClientRect();W=Math.max(300,r.width);H=Math.max(500,r.height);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}new ResizeObserver(resize).observe(canvas);resize();
+function beep(f=300,d=.08,type='square'){if(!sound)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=f;g.gain.value=.03;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.stop(audio.currentTime+d)}catch{}}
+const rand=(a,b)=>a+Math.random()*(b-a);
+function leprechaun(x,y,s=1,fall=false){
+ ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+ // boots and legs
+ rect(-17,22,13,18,'#68452e');rect(5,22,13,18,'#68452e');rect(-21,36,17,7,'#302820');rect(3,36,18,7,'#302820');
+ // green coat, orange waistcoat
+ rect(-20,-2,40,30,'#17603e');rect(-10,2,20,22,'#d9672d');rect(-3,5,6,5,'#f4c34f');rect(-3,14,6,5,'#f4c34f');
+ // ears
+ rect(-29,-27,12,15,'#f3b17d');rect(17,-27,12,15,'#f3b17d');rect(-25,-24,6,8,'#c86b52');rect(19,-24,6,8,'#c86b52');
+ // face, freckles, eyes, nose, teeth
+ rect(-19,-36,38,38,'#f5c18a');rect(-14,-30,7,9,'#fff8df');rect(7,-30,7,9,'#fff8df');rect(-11,-28,4,6,'#263329');rect(9,-28,4,6,'#263329');rect(-4,-20,10,8,'#ef9c61');rect(-3,-10,14,6,'#7d3027');rect(-1,-9,5,4,'#fff8df');rect(5,-9,5,4,'#fff8df');
+ for(let i=0;i<6;i++)rect(-13+(i%3)*7,-18+Math.floor(i/3)*5,2,2,'#b95f45');
+ // bright auburn hair and beard
+ rect(-22,-41,44,10,'#b84f25');rect(-23,-34,10,13,'#d85d26');rect(13,-34,10,13,'#d85d26');rect(-19,-12,38,18,'#d85d26');rect(-14,0,28,7,'#b84f25');rect(-12,-6,6,7,'#ed7830');rect(4,-6,6,7,'#ed7830');
+ // green hat and gold buckle
+ rect(-26,-48,52,8,'#124436');rect(-18,-62,36,17,'#17603e');rect(-10,-68,20,8,'#28794a');rect(-2,-59,10,7,'#f4c34f');rect(0,-58,5,4,'#d18b24');rect(-27,-49,54,4,'#0a3025');
+ // shamrock badge
+ rect(14,-57,5,5,'#8ddf35');rect(19,-60,5,5,'#8ddf35');rect(19,-54,5,5,'#8ddf35');
+ ctx.restore()
+}
 function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
-function text(t,x,y,size,color='#fff0c9',align='center'){ctx.font=`${size}px "Press Start 2P", monospace`;ctx.textAlign=align;ctx.fillStyle='#10251b';ctx.fillText(t,x+2,y+3);ctx.fillStyle=color;ctx.fillText(t,x,y)}
-function drawBg(t){rect(0,0,W,H,'#83d5ed'); // sky
-// clouds
-for(let i=0;i<5;i++){let x=((i*137-t*9)%(W+100)+W+100)%(W+100)-50,y=60+(i%3)*38;rect(x,y,46,12,'#fff0d0');rect(x+9,y-8,25,12,'#fff0d0')}
-// hills
-ctx.fillStyle='#65b85a';ctx.beginPath();ctx.moveTo(0,H*.34);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H*.28+Math.sin(x*.018+t*.0003)*25+Math.sin(x*.041)*10);ctx.lineTo(W,H*.6);ctx.lineTo(0,H*.6);ctx.fill();ctx.fillStyle='#2e8049';ctx.beginPath();ctx.moveTo(0,H*.43);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H*.38+Math.sin(x*.013+t*.0002+2)*30);ctx.lineTo(W,H*.65);ctx.lineTo(0,H*.65);ctx.fill();
-// castle
-rect(W*.73,H*.19,34,65,'#a5a58b');rect(W*.77,H*.14,13,30,'#8b907c');rect(W*.74,H*.17,7,12,'#8b907c');rect(W*.79,H*.23,6,10,'#52695d');
-// track bed perspective
-ctx.fillStyle='#8d7652';ctx.beginPath();ctx.moveTo(W*.32,H*.34);ctx.lineTo(W*.68,H*.34);ctx.lineTo(W*1.15,H);ctx.lineTo(-W*.15,H);ctx.fill();ctx.strokeStyle='#d7bd84';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(W*.42,H*.34);ctx.lineTo(W*.20,H);ctx.moveTo(W*.58,H*.34);ctx.lineTo(W*.80,H);ctx.stroke();
-// sleepers
-for(let i=0;i<15;i++){let p=((i/15+(t*.00028))%1);let y=H*.34+p*p*H*.66;let half=5+p*W*.48;rect(W/2-half,y,half*2,3+p*7,'#6c442d')}
-// lane guides
-ctx.strokeStyle='#ead4a0aa';ctx.lineWidth=2;ctx.setLineDash([8,12]);ctx.beginPath();ctx.moveTo(W*.5,H*.36);ctx.lineTo(W*.5,H);ctx.stroke();ctx.setLineDash([]);
-// stone walls and flowers
-for(let i=0;i<13;i++){let p=((i/13+t*.00023)%1),y=H*.42+p*p*H*.55,scale=.3+p;rect(W*.04,y,22*scale,5*scale,'#718b6c');rect(W*.84,y,24*scale,5*scale,'#718b6c');if(i%3===0){rect(W*.12+Math.sin(i)*8,y-4*scale,3*scale,3*scale,'#ffcc68');rect(W*.89,y-3*scale,3*scale,3*scale,'#f4a6a2')}}}
-function drawHero(t){let x=W*(.25+.25*lane),base=H*.73-jump*H*.42,scale=Math.min(W/390,1.2);if(duck>0)base+=15;let bob=Math.sin(t*.018)*3;ctx.save();ctx.translate(x,base+bob);if(duck>0)ctx.scale(1.25,.58); // cart
-rect(-27,25,54,17,'#8e542e');rect(-24,29,48,4,'#c18a4b');rect(-21,43,10,10,'#2b3025');rect(12,43,10,10,'#2b3025');rect(-18,41,5,5,'#b2a17a');rect(15,41,5,5,'#b2a17a');
-// body
-rect(-13,1,26,27,'#1d633e');rect(-16,9,32,12,'#1d633e');rect(-10,3,20,9,'#ed8e38');rect(-13,22,10,8,'#76502f');rect(4,22,10,8,'#76502f');
-// ears
-rect(-24,-24,9,12,'#e8a56d');rect(15,-24,9,12,'#e8a56d');rect(-22,-22,5,7,'#b96b50');rect(17,-22,5,7,'#b96b50');
-// face
-rect(-16,-31,32,31,'#efb77e');rect(-13,-34,26,7,'#a95c35');rect(-9,-25,6,8,'#fff4d5');rect(4,-25,6,8,'#fff4d5');rect(-7,-23,3,4,'#222');rect(6,-23,3,4,'#222');rect(-5,-12,10,7,'#8c392a');rect(-4,-11,3,4,'#fff');rect(1,-11,3,4,'#fff');
-// hair and hat
-rect(-18,-39,36,8,'#874728');rect(-18,-43,10,8,'#874728');rect(-13,-49,26,11,'#1b5736');rect(-9,-56,23,10,'#287246');rect(2,-55,5,5,'#f4c34f');rect(-22,-39,44,4,'#123e2a');
-// arms swing
-rect(-23,5+(jump? -5:Math.sin(t*.02)*3),9,14,'#1b633c');rect(14,5-(jump? -4:Math.sin(t*.02)*3),9,14,'#1b633c');ctx.restore();if(jump>0)rect(x-18,H*.79,36,3,'#ffffff44')}
-function drawObstacle(o){let x=W*(.25+.25*o.lane),y=o.y,sc=.45+y/H*.7;ctx.save();ctx.translate(x,y);if(o.type==='barrier'){rect(-28,-5,56,12,'#784629');for(let i=0;i<4;i++)rect(-23+i*14,-4,7,10,'#f4d9a1');rect(-24,7,6,22,'#6e432b');rect(18,7,6,22,'#6e432b')}else if(o.type==='bridge'){rect(-34,-26,68,15,'#627b66');rect(-28,-20,56,9,'#9cb18a');rect(-33,-10,9,35,'#536c5a');rect(24,-10,9,35,'#536c5a');rect(-17,-13,34,10,'#83d5ed')}else if(o.type==='sheep'){rect(-22,-17,44,29,'#fff1d6');rect(-18,-22,14,12,'#fff1d6');rect(4,-21,14,12,'#fff1d6');rect(17,-7,13,15,'#382c26');rect(20,-4,3,3,'#fff');rect(-14,11,5,13,'#41332b');rect(9,11,5,13,'#41332b')}else if(o.type==='rock'){rect(-23,-12,45,27,'#727d78');rect(-15,-21,24,12,'#8c9890');rect(-20,3,35,7,'#535f59')}else if(o.type==='log'){rect(-32,-9,64,18,'#8a542e');rect(-29,-7,8,14,'#c18a4b');rect(21,-7,8,14,'#c18a4b')}else if(o.type==='train'){rect(-28,-28,56,55,'#243c31');rect(-22,-21,44,24,'#d84631');rect(-18,-17,10,10,'#b9e7e8');rect(4,-17,10,10,'#b9e7e8');rect(-15,4,30,8,'#1d2520');rect(-22,15,44,7,'#171e19');rect(-17,-37,34,10,'#292f28');rect(-8,-49,16,13,'#2b332d');rect(-7,-59,14,9,'#f2e5b9');rect(-20,25,9,8,'#1d2520');rect(11,25,9,8,'#1d2520');if(Math.random()<.02)particles.push({x:x+rnd(-10,10),y:y-60,vx:rnd(-10,10),vy:-30,life:.7,c:'#fff0c9'})}ctx.restore()}
-function draw(t){ctx.clearRect(0,0,W,H);drawBg(t);if(state==='title'){drawHero(t);text('READY, ARE YA?',W/2,H*.88,10);return}for(const o of obstacles)drawObstacle(o);drawHero(t);for(const p of particles){ctx.globalAlpha=Math.max(0,p.life);rect(p.x,p.y,4,4,p.c);ctx.globalAlpha=1}if(state==='crash'){rect(0,0,W,H,'#10251b44');text('AH, GOBSHITE!',W/2,H*.28,14,'#ff9b42')}if(state==='pause'){rect(0,0,W,H,'#10251b66')}}
-function update(dt,t){if(state==='run'){elapsed+=dt;speed=Math.min(390,205+elapsed*3.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.58,1.15-elapsed*.008)+Math.random()*.35}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);for(const o of obstacles){o.y+=speed*dt*(.8+o.y/H*.35);if(!o.done&&o.y>H*.68&&o.y<H*.84){if(o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else{o.done=true;nearMissAt=t;beep(720,.05)}}else if(!o.passed&&o.y>H*.8){o.passed=true;if(Math.abs(o.lane-lane)===1&&Math.random()<.2){beep(760,.04)}}}if(o.y>H+70)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt}particles=particles.filter(p=>p.life>0);if(shake>0)shake=Math.max(0,shake-30*dt)}
-function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt,t);if(shake>0){ctx.save();ctx.translate(rnd(-shake,shake),rnd(-shake,shake))}draw(t);if(shake>0)ctx.restore();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+function title(){state='title';hud.style.display='none';hint.textContent='SWIPE TO DODGE · TAP TO START';panel.innerHTML=`<div class="logo">GOB<span>SHITE!</span></div><div class="hero"><canvas id="portrait" width="170" height="145" style="width:170px;height:145px;image-rendering:pixelated"></canvas></div><div class="tag">THE RUNAWAY RAILWAY<br>ONE TINY IRISH TROUBLEMAKER.<br>YOUR FAULT, APPARENTLY.</div><div style="font-size:7px;line-height:2">← → CHANGE LANE<br>↑ JUMP · ↓ DUCK</div><div class="actions"><button id="playBtn">▶ PLAY</button><button class="sound" id="soundBtn">♫ SOUND: ${sound?'ON':'OFF'}</button></div><div class="small">BEST DISTANCE: ${best}m<br>NO MERCY. JUST ONE MORE GO.</div>`;let p=document.querySelector('#portrait'),c=p.getContext('2d');c.imageSmoothingEnabled=false;c.save();c.translate(85,85); // reuse stylised pixel character in portrait canvas
+ c.scale(1.35,1.35); c.fillStyle='#17603e';c.fillRect(-18,-5,36,35);c.fillStyle='#d9672d';c.fillRect(-9,0,18,22);c.fillStyle='#f5c18a';c.fillRect(-19,-40,38,39);c.fillStyle='#f5c18a';c.fillRect(-29,-28,12,14);c.fillRect(17,-28,12,14);c.fillStyle='#d85d26';c.fillRect(-21,-42,42,13);c.fillRect(-18,-13,36,23);c.fillStyle='#fff8df';c.fillRect(-12,-30,8,10);c.fillRect(5,-30,8,10);c.fillStyle='#263329';c.fillRect(-8,-27,4,6);c.fillRect(8,-27,4,6);c.fillStyle='#7d3027';c.fillRect(-4,-10,16,6);c.fillStyle='#fff8df';c.fillRect(-1,-9,6,4);c.fillRect(6,-9,6,4);c.fillStyle='#124436';c.fillRect(-27,-50,54,8);c.fillRect(-18,-64,36,18);c.fillStyle='#28794a';c.fillRect(-10,-70,20,8);c.fillStyle='#f4c34f';c.fillRect(0,-59,10,7);c.restore();
+ document.querySelector('#playBtn').onclick=start;document.querySelector('#soundBtn').onclick=toggleSound;overlay.classList.remove('hidden')}
+const taunts={barrier:['Were you looking at the scenery, ya gobshite?','That barrier had the right of way. And more brains.'],sheep:['You couldnt avoid a sheep? A SHEEP!','He has more sense than you, that sheep.'],bridge:['Mind the head? What head?','A grand day to become a pancake.'],train:['Next time, try NOT meeting the train.','I specifically ordered the small train.'],rock:['Rock. You see rock. You hit rock. Jaysus.'],log:['Timber! No, wait. That was you.']};
+function start(){state='run';elapsed=distance=0;speed=205;lane=1;jump=duck=0;obstacles=[];spawnIn=.8;overlay.classList.add('hidden');hud.style.display='flex';hint.textContent='';last=performance.now();beep(540)}
+function toggleSound(){sound=!sound;let b=document.querySelector('#soundBtn');if(b)b.textContent='♫ SOUND: '+(sound?'ON':'OFF');beep(440)}
+function spawn(){let r=Math.random(),type=elapsed>18&&r<.08?'train':r<.22?'sheep':r<.38?'barrier':r<.53?'bridge':r<.72?'rock':'log',ln=Math.floor(Math.random()*3);obstacles.push({type,lane:ln,p:0,done:false})}
+function crash(o){if(state!=='run')return;state='crash';let arr=taunts[o.type]||taunts.barrier;dialogue=arr[Math.floor(Math.random()*arr.length)];if(distance>best){best=Math.floor(distance);localStorage.setItem('gobshite-best',best)}setTimeout(()=>{if(state==='crash')gameOver()},500)}
+function gameOver(){overlay.classList.remove('hidden');panel.innerHTML=`<div class="logo">AH, <span>GOBSHITE!</span></div><div class="speech">“${dialogue}”</div><div class="stats">DISTANCE: ${Math.floor(distance)}m<br>BEST: ${best}m</div><div class="actions"><button id="again">↻ TRY AGAIN</button><button class="sound" id="home">TITLE SCREEN</button></div>`;document.querySelector('#again').onclick=start;document.querySelector('#home').onclick=title}
+function pause(){if(state==='run'){state='pause';panel.innerHTML=`<div class="logo">TAKE A <span>BREATHER</span></div><div class="actions"><button id="resume">RESUME</button><button class="sound" id="restart">RESTART RUN</button><button class="sound" id="home">TITLE SCREEN</button></div>`;overlay.classList.remove('hidden');document.querySelector('#resume').onclick=()=>{state='run';overlay.classList.add('hidden');last=performance.now()};document.querySelector('#restart').onclick=start;document.querySelector('#home').onclick=title}}
+document.querySelector('#pauseBtn').onclick=pause;
+function move(a){if(state!=='run')return;if(a==='left')lane=Math.max(0,lane-1);if(a==='right')lane=Math.min(2,lane+1);if(a==='jump'&&!jump&&!duck)jump=.65;if(a==='duck'&&!jump)duck=.6}
+let sx=0,sy=0;canvas.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});canvas.addEventListener('pointerup',e=>{let dx=e.clientX-sx,dy=e.clientY-sy;if(state==='title'){start();return}if(state!=='run'||Math.max(Math.abs(dx),Math.abs(dy))<18)return;if(Math.abs(dx)>Math.abs(dy))move(dx<0?'left':'right');else move(dy<0?'jump':'duck')});
+window.addEventListener('keydown',e=>{if(state==='title'&&(e.key===' '||e.key==='Enter'))start();else if(e.key==='ArrowLeft'||e.key==='a')move('left');else if(e.key==='ArrowRight'||e.key==='d')move('right');else if(e.key==='ArrowUp'||e.key==='w')move('jump');else if(e.key==='ArrowDown'||e.key==='s')move('duck');else if(e.key==='Escape')pause()});
+function trackGeometry(p){ // p=0 horizon, p=1 foreground; track edges converge to vanishing point
+ const y=H*(.34+p*p*.66), half=W*(.10+p*.50);return {y,left:W/2-half,right:W/2+half,half}}
+function drawTrack(t){
+ // countryside sky
+ rect(0,0,W,H,'#78c9e8');rect(0,H*.28,W,H*.24,'#4b9b64');
+ ctx.fillStyle='#8acb5a';ctx.beginPath();ctx.moveTo(0,H*.36);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H*.28+Math.sin(x*.018+t*.0002)*18);ctx.lineTo(W,H*.62);ctx.lineTo(0,H*.62);ctx.fill();
+ // distant castle
+ rect(W*.73,H*.20,22,36,'#a5a58b');rect(W*.77,H*.16,10,22,'#8b907c');rect(W*.70,H*.24,9,29,'#9b9d87');
+ // gravel track bed
+ ctx.fillStyle='#776b57';ctx.beginPath();ctx.moveTo(W*.42,H*.34);ctx.lineTo(W*.58,H*.34);ctx.lineTo(W*1.12,H);ctx.lineTo(-W*.12,H);ctx.closePath();ctx.fill();
+ // ballast stones in track bed
+ for(let i=0;i<180;i++){let p=((i/180+t*.00008)%1),g=trackGeometry(p);let x=W/2+rand(-g.half*.87,g.half*.87);rect(x,g.y,Math.max(1,p*3),Math.max(1,p*2),i%3?'#9a8b70':'#514d43')}
+ // real steel rails: dark web, steel body, bright inner highlight; sleepers cross beneath both rails
+ for(let i=0;i<25;i++){let p=((i/25+t*.00023)%1),g=trackGeometry(p),th=2+p*5,sl=g.half*.88;ctx.fillStyle='#523c2b';ctx.beginPath();ctx.moveTo(W/2-sl,g.y);ctx.lineTo(W/2+sl,g.y);ctx.lineWidth=2+p*11;ctx.strokeStyle='#65432c';ctx.beginPath();ctx.moveTo(W/2-sl,g.y);ctx.lineTo(W/2+sl,g.y);ctx.stroke();ctx.strokeStyle='#a9774c';ctx.lineWidth=1+p*6;ctx.beginPath();ctx.moveTo(W/2-sl,g.y-1);ctx.lineTo(W/2+sl,g.y-1);ctx.stroke()}
+ for(let side of [-1,1]){ctx.beginPath();ctx.moveTo(W/2+side*W*.08,H*.34);ctx.lineTo(W/2+side*W*.60,H);ctx.lineWidth=8;ctx.strokeStyle='#333d3c';ctx.stroke();ctx.beginPath();ctx.moveTo(W/2+side*W*.08,H*.34);ctx.lineTo(W/2+side*W*.60,H);ctx.lineWidth=5;ctx.strokeStyle='#9da9a6';ctx.stroke();ctx.beginPath();ctx.moveTo(W/2+side*W*.08,H*.34);ctx.lineTo(W/2+side*W*.60,H);ctx.lineWidth=1.5;ctx.strokeStyle='#f2ead2';ctx.stroke()}
+ // sleepers are redrawn on top of rails so they visibly pass underneath
+ for(let i=0;i<19;i++){let p=((i/19+t*.00023)%1),g=trackGeometry(p),half=g.half*.91,th=2+p*10;ctx.strokeStyle='#3e2c23';ctx.lineWidth=th+2;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();ctx.strokeStyle='#8c5734';ctx.lineWidth=th;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();ctx.strokeStyle='#c28b53';ctx.lineWidth=Math.max(1,th*.18);ctx.beginPath();ctx.moveTo(W/2-half,g.y-th*.3);ctx.lineTo(W/2+half,g.y-th*.3);ctx.stroke();
+ // rail fasteners where sleeper meets rail
+ for(let side of [-1,1]){let x=W/2+side*g.half*.5;rect(x-th*.5,g.y-th*.45,Math.max(2,th*.38),Math.max(2,th*.35),'#343b39')}
+ }
+ // stone walls and flowers
+ for(let i=0;i<14;i++){let p=((i/14+t*.00013)%1),g=trackGeometry(p),y=g.y,sz=.5+p;rect(W*.02,y,16*sz,5*sz,'#778675');rect(W*.93-16*sz,y,16*sz,5*sz,'#778675');if(i%3===0){rect(W*.1,y-4*sz,3*sz,3*sz,'#ffcc68');rect(W*.87,y-3*sz,3*sz,3*sz,'#f4a6a2')}}
+}
+function lanePos(ln,p){let g=trackGeometry(p);return W/2+(ln-1)*g.half*.48}
+function drawObstacle(o){let p=o.p,g=trackGeometry(p),x=lanePos(o.lane,p),y=g.y,sc=.35+p*.8;ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);
+ // Draw grounded objects on the track surface. Their bottom edge sits at sleeper level.
+ if(o.type==='barrier'){rect(-31,-35,62,10,'#f1e4c8');for(let i=0;i<5;i++)rect(-29+i*13,-35,7,10,'#d84531');rect(-29,-25,6,25,'#5c402b');rect(23,-25,6,25,'#5c402b');rect(-34,-39,68,5,'#9ca5a0')}
+ else if(o.type==='bridge'){rect(-40,-54,80,12,'#536b50');rect(-35,-48,70,8,'#8da37b');rect(-38,-40,9,40,'#536b50');rect(29,-40,9,40,'#536b50');rect(-18,-42,36,9,'#78c9e8')}
+ else if(o.type==='sheep'){rect(-23,-34,46,27,'#fff1d6');rect(-19,-40,15,13,'#fff1d6');rect(3,-40,15,13,'#fff1d6');rect(16,-31,13,17,'#382c26');rect(20,-27,3,3,'#fff');rect(-14,-7,5,7,'#41332b');rect(9,-7,5,7,'#41332b')}
+ else if(o.type==='rock'){rect(-24,-28,45,26,'#727d78');rect(-15,-39,24,14,'#8c9890');rect(-20,-5,35,5,'#535f59')}
+ else if(o.type==='log'){rect(-35,-24,70,22,'#8a542e');rect(-32,-22,9,18,'#c18a4b');rect(23,-22,9,18,'#c18a4b');rect(-17,-20,3,14,'#5d371f');rect(8,-20,3,14,'#5d371f')}
+ else if(o.type==='train'){rect(-29,-57,58,56,'#263c32');rect(-23,-50,46,25,'#d84631');rect(-18,-45,11,11,'#b9e7e8');rect(5,-45,11,11,'#b9e7e8');rect(-15,-22,30,8,'#1d2520');rect(-24,-9,48,7,'#171e19');rect(-20,-1,10,5,'#1d2520');rect(10,-1,10,5,'#1d2520');rect(-7,-68,14,12,'#2b332d');rect(-6,-78,12,10,'#f2e5b9')}
+ ctx.restore()}
+function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){leprechaun(W/2,H*.75,1.15);return} // far obstacles first, nearer obstacles last
+ for(const o of [...obstacles].sort((a,b)=>a.p-b.p))drawObstacle(o);
+ let py=H*.79-jump*H*.33;if(duck>0)py+=12;leprechaun(lanePos(lane,.82),py,Math.min(1.5,W/390)*(duck>0?.72:1),state==='crash');
+ if(state==='crash'){rect(0,0,W,H,'#10251b44')}
+}
+function update(dt){if(state==='run'){elapsed+=dt;speed=Math.min(390,205+elapsed*3.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.62,1.25-elapsed*.007)+Math.random()*.3}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);
+ for(const o of obstacles){o.p+=speed*dt/(H*.9); // collision uses same projected position and the visible ground contact point
+ if(!o.done&&o.p>.76&&o.p<.91&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}
+ if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
+}
+function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw(t);requestAnimationFrame(loop)}
+title();last=performance.now();requestAnimationFrame(loop);
 })();
 </script></body></html>

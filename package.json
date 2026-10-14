@@ -1,8 +1,8 @@
 {
   "name": "gobshite-arcade",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
+  "version": "0.2.0",
+  "description": "GOBSHITE! — Irish pixel-art arcade runner",
+  "main": "server.js",
   "scripts": {"start": "node server.js"},
   "engines": {"node": ">=20"}
 }
