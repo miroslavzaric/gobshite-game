@@ -1,109 +1,45 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#124436"><meta name="gobshite-version" content="0.8.0"><title>GOBSHITE! — The Runaway Railway</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#174c35"><title>GOBSHITE! — The Great Irish Getaway</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-:root{--green:#124436;--lime:#8ddf35;--orange:#f47735;--cream:#fff0c9}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102b20;color:var(--cream);font-family:'Press Start 2P',monospace;touch-action:none}#wrap{position:relative;width:100%;height:100%;display:flex;justify-content:center;background:#183e31}canvas#game{display:block;width:100%;height:100%;max-width:600px;image-rendering:pixelated}
-#hud{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;display:none;justify-content:space-between;padding:0 14px;font-size:9px;text-shadow:2px 2px #10251b;pointer-events:none}button{font:inherit;border:3px solid #10251b;border-radius:8px;color:#14251c;background:var(--lime);box-shadow:0 5px 0 #0a1a12;padding:13px 12px;font-size:11px;cursor:pointer}#hud button{pointer-events:auto;padding:9px}
-#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;background:linear-gradient(#071a1240,#071a12a6)}.panel{width:min(100%,410px);max-height:96%;overflow:auto;border:4px solid #15271d;background:#f7e6b7;color:#14251c;box-shadow:0 0 0 4px #e0a24e,8px 8px 0 #071a12;padding:clamp(12px,3vh,22px) 16px;text-align:center}
-.logo{font-size:clamp(28px,8vw,46px);line-height:1.25;letter-spacing:-3px;color:#8ddf35;text-shadow:3px 3px #174d35,6px 6px #10251b}.logo span{color:#f47735}.tag{font-size:8px;line-height:2.1;margin:8px auto;color:#33513c}.hero{height:clamp(130px,22vh,190px);margin:0 auto;display:flex;align-items:center;justify-content:center}.hero canvas{width:200px;height:180px;image-rendering:pixelated}.actions{display:grid;gap:10px;margin-top:10px}.sound{background:#e9d5a2}.small{font-size:7px;line-height:2;margin-top:10px;color:#425543}.hidden{display:none!important}.speech{font-size:10px;line-height:1.8;margin:14px 0}.stats{font-size:8px;line-height:2.4}.hint{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:7px;color:#fff0c9cc;pointer-events:none}
-@media(max-height:700px){.hero{height:110px}.hero canvas{height:108px;width:150px}.tag{font-size:7px;line-height:1.8}.panel{padding:10px}.small{margin-top:6px}}
-</style></head><body><main id="wrap"><canvas id="game"></canvas><div id="hud"><div>DISTANCE <span id="score">0</span>m<br><span style="color:#8ddf35">BEST <span id="best">0</span>m</span></div><button id="pauseBtn">Ⅱ</button></div><div id="overlay"><section class="panel" id="panel"></section></div><div class="hint" id="hint">SWIPE TO DODGE · TAP TO START</div></main>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#123b2c;font-family:system-ui,-apple-system,sans-serif;touch-action:none}canvas{display:block;width:100vw;height:100dvh;image-rendering:pixelated;touch-action:none}#hint{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 12px);left:0;right:0;text-align:center;color:#fff3c6;font-weight:800;font-size:12px;letter-spacing:1px;text-shadow:0 2px 4px #173a2b;pointer-events:none}
+</style></head><body><canvas id="game" aria-label="GOBSHITE side-scrolling game"></canvas><div id="hint">TAP TO JUMP · AVOID THE LOG · COLLECT SHAMROCKS</div>
 <script>
 (()=>{
-const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),overlay=document.querySelector('#overlay'),panel=document.querySelector('#panel'),hud=document.querySelector('#hud'),scoreEl=document.querySelector('#score'),bestEl=document.querySelector('#best'),hint=document.querySelector('#hint');
-let W=390,H=844,dpr=1,state='title',last=0,elapsed=0,distance=0,best=+(localStorage.getItem('gobshite-best')||0),speed=175,lane=1,jump=0,duck=0,obstacles=[],spawnIn=1,sound=false,audio=null,dialogue='';
-bestEl.textContent=best;
-function resize(){dpr=Math.min(devicePixelRatio||1,2);const r=canvas.getBoundingClientRect();W=Math.max(300,r.width);H=Math.max(500,r.height);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}new ResizeObserver(resize).observe(canvas);resize();
-function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
-function poly(points,fill,stroke=null,lw=1){ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
-const heroSheet=new Image();heroSheet.src='/assets/leprechaun-sheet.png';
-const obstacleImages={};['rock','log','barrel','barrier','sheep','train','coin'].forEach(k=>{obstacleImages[k]=new Image();obstacleImages[k].src='/assets/'+k+'.png'});
-function drawLeprechaun(c,x,y,scale=1,pose='run'){
- c.save();c.translate(x,y);c.scale(scale,scale);
- let frame=0;
- if(pose==='jump')frame=4;else if(pose==='duck')frame=5;else if(pose==='slide')frame=6;else if(pose==='fall')frame=7;else frame=Math.floor(elapsed*10)%4;
- if(heroSheet.complete&&heroSheet.naturalWidth){c.imageSmoothingEnabled=false;c.drawImage(heroSheet,frame*96,0,96,112,-48,-78,96,112)}
- c.restore()
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const img={};['leprechaun','irish-countryside','log','coin','barrel','sheep'].forEach(n=>{img[n]=new Image();img[n].src='assets/'+n+'.png'});
+let W=390,H=844,dpr=1,mode='title',last=0,elapsed=0,world=0,score=0,best=Number(localStorage.getItem('gobshiteSideBest')||0),speed=205,spawnIn=1.4,coinIn=1.0,obstacles=[],coins=[],particles=[],player={x:0,y:0,w:66,h:84,vy:0,onGround:true,frame:0};
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);player.x=W*.18;player.y=groundY()-player.h}
+function groundY(){return H*.79}
+window.addEventListener('resize',resize);resize();
+function drawCover(image,x,y,w,h,offset=0){if(!image||!image.complete||!image.naturalWidth)return;const iw=image.naturalWidth,ih=image.naturalHeight;let scale=Math.max(w/iw,h/ih),dw=iw*scale,dh=ih*scale;ctx.drawImage(image,x-offset,y,dw,dh)}
+function roundRect(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.lineWidth=3;ctx.strokeStyle=stroke;ctx.stroke()}}
+function background(){const gy=groundY();ctx.fillStyle='#83d8f2';ctx.fillRect(0,0,W,H); // sky
+// Use the illustrated asset as a real scrolling backdrop, plus subtle parallax repeat.
+if(img['irish-countryside']?.complete&&img['irish-countryside'].naturalWidth){let im=img['irish-countryside'];let bh=gy*.88,bw=bh*im.naturalWidth/im.naturalHeight;let off=(world*.10)%bw;for(let x=-off-bw;x<W+bw;x+=bw)ctx.drawImage(im,x,0,bw,bh)}
+// distant rolling green layers
+ctx.fillStyle='#5c9c55';ctx.beginPath();ctx.moveTo(0,gy-90);for(let x=0;x<=W+30;x+=30)ctx.lineTo(x,gy-105-Math.sin((x+world*.18)/73)*23-Math.cos(x/39)*9);ctx.lineTo(W,gy);ctx.lineTo(0,gy);ctx.closePath();ctx.fill();
+// road / grass ground
+ctx.fillStyle='#3b8b48';ctx.fillRect(0,gy-16,W,H-gy+16);ctx.fillStyle='#78c94f';ctx.fillRect(0,gy-12,W,15);ctx.fillStyle='#28643b';ctx.fillRect(0,gy+3,W,H-gy);
+// scrolling dirt path
+ctx.fillStyle='#b7793d';ctx.fillRect(0,gy+8,W,Math.max(24,H-gy-8));ctx.fillStyle='#d99b56';ctx.fillRect(0,gy+8,W,5);
+for(let x=-(world*.65%70);x<W;x+=70){ctx.fillStyle='#80502f';ctx.fillRect(x,gy+25,24,3);ctx.fillStyle='#f0c27c';ctx.fillRect(x+7,gy+43,3,2)}
+// little flowers on verge
+for(let x=-(world*.45%53);x<W;x+=53){ctx.fillStyle=['#fff4d6','#f7d85a','#f7a5c5'][Math.floor((x+world/20+1000)/53)%3];ctx.fillRect(x,gy-21-Math.abs(Math.sin(x*.1))*8,4,4)}
 }
-function drawPortrait(){let p=document.querySelector('#portrait');if(!p)return;let c=p.getContext('2d');c.imageSmoothingEnabled=false;c.clearRect(0,0,p.width,p.height);c.save();c.translate(p.width/2,p.height*.78);drawLeprechaun(c,0,0,1.65,'idle');c.restore()}
-function title(){state='title';hud.style.display='none';hint.textContent='SWIPE TO DODGE · TAP TO START';panel.innerHTML=`<div class="logo">GOB<span>SHITE!</span></div><div class="hero"><canvas id="portrait" width="220" height="190"></canvas></div><div class="tag">THE RUNAWAY RAILWAY<br>ONE TINY IRISH TROUBLEMAKER.<br>YOUR FAULT, APPARENTLY.</div><div style="font-size:7px;line-height:2">← → CHANGE LANE<br>↑ JUMP · ↓ DUCK</div><div class="actions"><button id="playBtn">▶ PLAY</button><button class="sound" id="soundBtn">♫ SOUND: ${sound?'ON':'OFF'}</button></div><div class="small">BEST DISTANCE: ${best}m<br>NO MERCY. JUST ONE MORE GO.</div>`;drawPortrait();document.querySelector('#playBtn').onclick=start;document.querySelector('#soundBtn').onclick=toggleSound;overlay.classList.remove('hidden')}
-function beep(f=300,d=.08){if(!sound)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type='square';o.frequency.value=f;g.gain.value=.025;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.stop(audio.currentTime+d)}catch{}}
-function toggleSound(){sound=!sound;let b=document.querySelector('#soundBtn');if(b)b.textContent='♫ SOUND: '+(sound?'ON':'OFF');beep(440)}
-const taunts={barrier:['Were you looking at the scenery, ya gobshite?','That barrier had the right of way. And more brains.'],sheep:['You couldnt avoid a sheep? A SHEEP!','He has more sense than you, that sheep.'],bridge:['Mind the head? What head?','A grand day to become a pancake.'],train:['Next time, try NOT meeting the train.','I specifically ordered the small train.'],rock:['Rock. You see rock. You hit rock. Jaysus.'],log:['Timber! No, wait. That was you.']};
-function start(){state='run';elapsed=distance=0;speed=175;lane=1;jump=duck=0;obstacles=[];spawnIn=.8;overlay.classList.add('hidden');hud.style.display='flex';hint.textContent='';last=performance.now();beep(540)}
-function spawn(){let r=Math.random(),type= r<.18?'sheep':r<.34?'barrier':r<.47?'bridge':r<.67?'rock':'log';if(elapsed>18&&r<.06)type='train';let ln=Math.floor(Math.random()*3);obstacles.push({type,lane:ln,p:0,done:false})}
-function crash(o){if(state!=='run')return;state='crash';let a=taunts[o.type]||taunts.barrier;dialogue=a[Math.floor(Math.random()*a.length)];if(distance>best){best=Math.floor(distance);localStorage.setItem('gobshite-best',best)}setTimeout(()=>{if(state==='crash')gameOver()},420)}
-function gameOver(){overlay.classList.remove('hidden');panel.innerHTML=`<div class="logo">AH, <span>GOBSHITE!</span></div><div class="speech">“${dialogue}”</div><div class="stats">DISTANCE: ${Math.floor(distance)}m<br>BEST: ${best}m</div><div class="actions"><button id="again">↻ TRY AGAIN</button><button class="sound" id="home">TITLE SCREEN</button></div>`;document.querySelector('#again').onclick=start;document.querySelector('#home').onclick=title}
-function pause(){if(state==='run'){state='pause';panel.innerHTML=`<div class="logo">TAKE A <span>BREATHER</span></div><div class="actions"><button id="resume">RESUME</button><button class="sound" id="restart">RESTART RUN</button><button class="sound" id="home">TITLE SCREEN</button></div>`;overlay.classList.remove('hidden');document.querySelector('#resume').onclick=()=>{state='run';overlay.classList.add('hidden');last=performance.now()};document.querySelector('#restart').onclick=start;document.querySelector('#home').onclick=title}}
-document.querySelector('#pauseBtn').onclick=pause;
-function move(a){if(state!=='run')return;if(a==='left')lane=Math.max(0,lane-1);if(a==='right')lane=Math.min(2,lane+1);if(a==='jump'&&!jump&&!duck)jump=.72;if(a==='duck'&&!jump)duck=.65}
-let sx=0,sy=0;canvas.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});canvas.addEventListener('pointerup',e=>{let dx=e.clientX-sx,dy=e.clientY-sy;if(state==='title'){start();return}if(state!=='run'||Math.max(Math.abs(dx),Math.abs(dy))<18)return;if(Math.abs(dx)>Math.abs(dy))move(dx<0?'left':'right');else move(dy<0?'jump':'duck')});
-window.addEventListener('keydown',e=>{if(state==='title'&&(e.key===' '||e.key==='Enter'))start();else if(e.key==='ArrowLeft'||e.key==='a')move('left');else if(e.key==='ArrowRight'||e.key==='d')move('right');else if(e.key==='ArrowUp'||e.key==='w')move('jump');else if(e.key==='ArrowDown'||e.key==='s')move('duck');else if(e.key==='Escape')pause()});
-function geom(p){let y=H*(.32+p*p*.68),half=W*(.075+p*.42);return{y,half,left:W/2-half,right:W/2+half}}
-function drawTrack(t){
- // 0.8: richly layered Irish countryside drawn as a coherent environment.
- const horizon=H*.37;
- let sky=ctx.createLinearGradient(0,0,0,H*.52);sky.addColorStop(0,'#63c8ed');sky.addColorStop(.72,'#b9e8ef');sky.addColorStop(1,'#d8edcf');rect(0,0,W,H,'#63c8ed');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*.54);
- // Soft, broken clouds with shaded undersides.
- for(let i=0;i<6;i++){let x=((i*91-t*.009)%(W+130)+W+130)%(W+130)-65,y=H*(.055+(i%3)*.045),w=30+(i%3)*10;rect(x,y+5,w+20,7,'#b8dce1');rect(x+7,y,w,10,'#f8fff4');rect(x+18,y-5,w*.45,8,'#fffdf2');rect(x+w,y+3,13,8,'#edf8e9')}
- // Distant blue mountain range with irregular ridgelines and snow/rock facets.
- poly([[0,H*.34],[W*.09,H*.23],[W*.16,H*.29],[W*.29,H*.17],[W*.38,H*.27],[W*.52,H*.15],[W*.63,H*.27],[W*.78,H*.19],[W*.9,H*.27],[W,H*.21],[W,H*.48],[0,H*.48]],'#5a9fba');
- poly([[0,H*.34],[W*.09,H*.23],[W*.13,H*.29],[W*.17,H*.27],[W*.29,H*.17],[W*.34,H*.25],[W*.38,H*.27],[W*.52,H*.15],[W*.58,H*.24],[W*.63,H*.27],[W*.78,H*.19],[W*.83,H*.25],[W*.9,H*.27],[W,H*.21],[W,H*.48],[0,H*.48]],'#3e7f9f');
- poly([[W*.26,H*.22],[W*.29,H*.17],[W*.32,H*.22],[W*.30,H*.21],[W*.29,H*.23]],'#d9e7dc');poly([[W*.48,H*.19],[W*.52,H*.15],[W*.56,H*.20],[W*.53,H*.19],[W*.52,H*.21]],'#e8efe3');poly([[W*.75,H*.22],[W*.78,H*.19],[W*.81,H*.22],[W*.78,H*.21]],'#e8efe3');
- // Rolling green hills in overlapping layers.
- poly([[0,H*.36],[W*.12,H*.29],[W*.25,H*.34],[W*.39,H*.27],[W*.53,H*.35],[W*.68,H*.28],[W*.82,H*.34],[W,H*.29],[W,H*.55],[0,H*.55]],'#4e8c58');
- poly([[0,H*.43],[W*.16,H*.34],[W*.3,H*.41],[W*.47,H*.32],[W*.61,H*.4],[W*.78,H*.33],[W,H*.4],[W,H*.58],[0,H*.58]],'#75ad55');
- // Distant lake with a bright reflected strip.
- rect(0,H*.405,W,H*.09,'#3299bd');rect(0,H*.432,W,H*.009,'#9ee5e7');rect(0,H*.472,W,H*.006,'#77d2df');
- for(let i=0;i<15;i++){let x=((i*43+t*.004)%(W+25))-12,y=H*(.415+(i%4)*.014);rect(x,y,8+(i%4)*4,1.5,'#a8e5e5')}
- // Castle silhouette on the right hillside, with turrets and visible windows.
- const cx=W*.78,cy=H*.255,cs=Math.min(W/390,1.2);
- rect(cx,cy,25*cs,29*cs,'#9d9b7e');rect(cx+4*cs,cy-11*cs,8*cs,40*cs,'#b7b298');rect(cx+17*cs,cy-6*cs,8*cs,35*cs,'#aaa78a');rect(cx-3*cs,cy+7*cs,31*cs,22*cs,'#c3bea0');
- for(let j=0;j<3;j++){rect(cx+2*cs+j*9*cs,cy-12*cs,4*cs,4*cs,'#c3bea0');rect(cx+3*cs+j*9*cs,cy+13*cs,2*cs,4*cs,'#5c766b')}
- // Stone viaduct across the distant lake, arch openings read clearly at phone size.
- const vy=H*.395,vx=W*.08,vw=W*.55,vh=H*.045;rect(vx,vy,vw,vh*.23,'#a9a58e');rect(vx,vy+vh*.23,vw,vh*.22,'#777b6d');
- for(let i=0;i<5;i++){let ax=vx+vw*(i+.5)/5,rad=vw*.047;ctx.fillStyle='#485e5d';ctx.beginPath();ctx.arc(ax,vy+vh*.48,rad,Math.PI,0);ctx.lineTo(ax+rad,vy+vh);ctx.lineTo(ax-rad,vy+vh);ctx.closePath();ctx.fill();rect(ax-rad,vy+vh*.5,rad*2,vh*.5,'#3299bd');ctx.strokeStyle='#b9b29a';ctx.lineWidth=1;ctx.beginPath();ctx.arc(ax,vy+vh*.48,rad,Math.PI,0);ctx.stroke()}
- // Lush trackside banks, with darker hedge layers and individual foliage clumps.
- poly([[0,H*.48],[W*.18,H*.44],[W*.34,H*.47],[W*.4,H*.43],[W*.6,H*.43],[W*.72,H*.47],[W,H*.44],[W,H],[0,H]],'#39744c');
- for(let side of [-1,1]){
-   for(let i=0;i<24;i++){let p=i/24,yy=H*(.455+p*.46),xx=W/2+side*(W*(.31+p*.24));let r=2+p*7+(i%3);ctx.fillStyle=['#2d6746','#4e8a4f','#6ba552','#86b95d'][i%4];ctx.beginPath();ctx.arc(xx,yy,r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b4d46c';ctx.beginPath();ctx.arc(xx-r*.25,yy-r*.3,r*.35,0,Math.PI*2);ctx.fill();
-     if(i%2===0){let fx=W/2+side*(W*(.27+p*.26)),fy=yy+8+p*6;rect(fx,fy,2+p*1.4,2+p*1.4,['#fff2d0','#f5b9b1','#f6d85e'][i%3])}
-   }
- }
- // Track bed and ballast. Perspective geometry remains aligned with the gameplay lanes.
- poly([[W*.40,H*.32],[W*.60,H*.32],[W*1.02,H],[-W*.02,H]],'#3d4137');
- poly([[W*.425,H*.33],[W*.575,H*.33],[W*.91,H],[W*.09,H]],'#766d5a');
- // Gravel pieces have stable positions and increase in size toward the player.
- for(let i=0;i<320;i++){let p=((i/320+t*.000025)%1),g=geom(p),u=((i*73)%251)/250-.5,x=W/2+u*g.half*1.7,sz=.6+p*2.1;rect(x,g.y,sz*1.8,sz*.8,(i%5===0?'#b9a68a':i%4===0?'#4e5046':i%3===0?'#605d4f':'#968873'))}
- const sleeperCount=20;
- for(let i=0;i<sleeperCount;i++){let p=((i/sleeperCount+t*.000095)%1),g=geom(p),half=g.half*.84,th=1.1+p*5.4;
-   ctx.strokeStyle='#34271f';ctx.lineWidth=th+2.2;ctx.beginPath();ctx.moveTo(W/2-half,g.y+1);ctx.lineTo(W/2+half,g.y+1);ctx.stroke();
-   ctx.strokeStyle='#5a3828';ctx.lineWidth=th;ctx.beginPath();ctx.moveTo(W/2-half,g.y);ctx.lineTo(W/2+half,g.y);ctx.stroke();
-   ctx.strokeStyle='#b47a46';ctx.lineWidth=Math.max(.8,th*.25);ctx.beginPath();ctx.moveTo(W/2-half,g.y-th*.24);ctx.lineTo(W/2+half,g.y-th*.24);ctx.stroke();
-   if(p>.22){for(let side of [-1,1]){let xx=W/2+side*half*.94;rect(xx-th*.2,g.y-th*.23,Math.max(1,th*.2),Math.max(1,th*.2),'#d5b98b')}}
- }
- // Two polished rails with foot, web, head and specular edge.
- for(let side of [-1,1]){let x0=W/2+side*W*.075,x1=W/2+side*W*.54;ctx.lineCap='butt';ctx.strokeStyle='#293634';ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#637671';ctx.lineWidth=7.5;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#d0d9cf';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x0,H*.32);ctx.lineTo(x1,H);ctx.stroke();ctx.strokeStyle='#fff8df';ctx.lineWidth=1.25;ctx.beginPath();ctx.moveTo(x0-side*1.2,H*.32);ctx.lineTo(x1-side*1.2,H);ctx.stroke()}
- // trackside old stone wall blocks, growing toward the foreground.
- for(let i=0;i<18;i++){let p=((i/18+t*.00008)%1),g=geom(p),s=.35+p*.85,y=g.y,hh=3+s*5,ww=12+s*12;for(let side of [-1,1]){let x=side<0?W*.025:W-ww-W*.025;rect(x,y,ww,hh,'#566a53');rect(x,y,ww,Math.max(1,s*1.5),'#a7a58a');rect(x+ww*.56,y+hh*.45,ww*.27,Math.max(1,s),'#394d3c');if(i%4===0){rect(x+ww*.24,y+hh*.25,Math.max(1,s*2),Math.max(1,s*1.5),'#d8c58e')}}}
-}
-function laneX(ln,p){let g=geom(p);return W/2+(ln-1)*g.half*.48}
-function obstacleDraw(o){
- let p=o.p,g=geom(p),x=laneX(o.lane,p),y=g.y,scale=.22+p*.56;
- ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
- let key=o.type==='bridge'?'barrier':o.type;
- let im=obstacleImages[key];
- if(im&&im.complete&&im.naturalWidth){ctx.imageSmoothingEnabled=false;let w=96,h=80;ctx.drawImage(im,-w/2,-h, w,h)}
- else {rect(-20,-20,40,20,'#89502b')}
- ctx.restore()
-}
-function draw(t){ctx.clearRect(0,0,W,H);drawTrack(t);if(state==='title'){drawLeprechaun(ctx,W/2,H*.75,1.2,'idle');return}for(const o of [...obstacles].sort((a,b)=>a.p-b.p))obstacleDraw(o);let py=H*.79-jump*H*.34;if(duck>0)py+=12;drawLeprechaun(ctx,laneX(lane,.82),py,Math.min(1.15,W/390)*(duck>0?.76:1),state==='crash'?'fall':'run');if(state==='crash')rect(0,0,W,H,'#10251b44')}
-function update(dt){if(state!=='run')return;elapsed+=dt;speed=Math.min(330,175+elapsed*2.5);distance+=speed*dt*.055;scoreEl.textContent=Math.floor(distance);spawnIn-=dt;if(spawnIn<=0){spawn();spawnIn=Math.max(.82,1.45-elapsed*.005)+Math.random()*.35}jump=Math.max(0,jump-dt);duck=Math.max(0,duck-dt);
- for(const o of obstacles){o.p+=speed*dt/(H*.92);if(!o.done&&o.p>.80&&o.p<.875&&o.lane===lane){let safe=(o.type==='barrier'||o.type==='rock'||o.type==='log')?jump>0:(o.type==='bridge'?duck>0:false);if(o.type==='sheep'||o.type==='train')safe=false;if(!safe)crash(o);else o.done=true}if(o.p>1.08)o.remove=true}obstacles=obstacles.filter(o=>!o.remove)}
-function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw(t);requestAnimationFrame(loop)}
-heroSheet.onload=()=>{if(state==='title')drawPortrait()};title();last=performance.now();requestAnimationFrame(loop);
+function drawPlayer(){const gy=groundY();let bob=player.onGround?Math.sin(elapsed*17)*2:0;let y=player.y+bob; if(img.leprechaun?.complete&&img.leprechaun.naturalWidth){ctx.drawImage(img.leprechaun,player.x,y,player.w,player.h)}else{ctx.fillStyle='#146b3d';ctx.fillRect(player.x,y,player.w,player.h);ctx.fillStyle='#e78336';ctx.fillRect(player.x+20,y+25,25,25)}
+// shadow
+ctx.fillStyle='rgba(23,48,25,.25)';ctx.beginPath();ctx.ellipse(player.x+player.w*.5,gy+7,player.w*.48,6,0,0,Math.PI*2);ctx.fill()}
+function spawnObstacle(){const type=Math.random()<.65?'log':'barrel';let w=type==='log'?Math.min(74,W*.19):Math.min(57,W*.15),h=type==='log'?Math.min(46,H*.07):Math.min(57,H*.085);obstacles.push({type,x:W+30,y:groundY()-h+5,w,h,passed:false});spawnIn=1.45+Math.random()*.85}
+function spawnCoins(){let n=4;let start=W+15;for(let i=0;i<n;i++)coins.push({x:start+i*35,y:groundY()-95-(i===1||i===2?18:0),r:13,taken:false});coinIn=2.2+Math.random()*1.6}
+function drawImageOrShape(name,x,y,w,h){const im=img[name];if(im?.complete&&im.naturalWidth)ctx.drawImage(im,x,y,w,h);else {ctx.fillStyle='#8b542f';ctx.fillRect(x,y,w,h)}}
+function hud(){roundRect(12,12,110,42,10,'#174a35','#f2d27b');ctx.font='bold 17px system-ui';ctx.textAlign='left';ctx.fillStyle='#fff5cf';ctx.fillText('☘ '+score,25,40);roundRect(W-142,12,94,42,10,'#174a35','#f2d27b');ctx.textAlign='center';ctx.fillText(Math.floor(world)+'m',W-95,40);}
+function overlay(title,sub,button){ctx.fillStyle='rgba(10,34,25,.55)';ctx.fillRect(0,0,W,H);let pw=Math.min(W-32,390),ph=300,px=(W-pw)/2,py=(H-ph)/2;roundRect(px,py,pw,ph,22,'#fff0bc','#d89a42');ctx.textAlign='center';ctx.fillStyle='#124631';ctx.font='1000 '+Math.min(42,W*.105)+'px system-ui';ctx.fillText('GOBSHITE!',W/2,py+58);ctx.fillStyle='#ba5c28';ctx.font='bold 14px system-ui';ctx.fillText('THE GREAT IRISH GETAWAY',W/2,py+84);ctx.fillStyle='#174a35';ctx.font='bold 25px system-ui';ctx.fillText(title,W/2,py+128);ctx.font='15px system-ui';ctx.fillText(sub,W/2,py+156);roundRect(px+25,py+190,pw-50,58,14,'#8ddd35','#174a35');ctx.fillStyle='#123c2c';ctx.font='bold 22px system-ui';ctx.fillText(button,W/2,py+227);ctx.font='12px system-ui';ctx.fillStyle='#31573e';ctx.fillText('TAP ANYWHERE TO JUMP',W/2,py+277)}
+function reset(){mode='playing';elapsed=0;world=0;score=0;speed=205;spawnIn=1.4;coinIn=.8;obstacles=[];coins=[];particles=[];player.y=groundY()-player.h;player.vy=0;player.onGround=true}
+function jump(){if(mode==='title'){reset();return}if(mode==='over'){mode='title';return}if(mode!=='playing')return;if(player.onGround){player.vy=-Math.min(590,H*.78);player.onGround=false}}
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();jump()});window.addEventListener('keydown',e=>{if(['Space','ArrowUp','KeyW'].includes(e.code)){e.preventDefault();jump()}});
+function update(dt){if(mode!=='playing')return;elapsed+=dt;world+=speed*dt/7;speed=Math.min(265,speed+dt*1.1);player.vy+=1500*dt;player.y+=player.vy*dt;let floor=groundY()-player.h;if(player.y>=floor){player.y=floor;player.vy=0;player.onGround=true}spawnIn-=dt;coinIn-=dt;if(spawnIn<=0)spawnObstacle();if(coinIn<=0)spawnCoins();for(const o of obstacles){o.x-=speed*dt;if(!o.passed&&o.x+o.w<player.x){o.passed=true;world+=1}let inset=10;let hit=player.x+player.w-inset>o.x+7&&player.x+inset<o.x+o.w-7&&player.y+player.h-7>o.y+7;if(hit){mode='over';best=Math.max(best,Math.floor(world));localStorage.setItem('gobshiteSideBest',best);return}}
+obstacles=obstacles.filter(o=>o.x+o.w>-40);for(const c of coins){c.x-=speed*dt;if(!c.taken&&Math.abs((player.x+player.w*.5)-c.x)<c.r+player.w*.28&&Math.abs((player.y+player.h*.4)-c.y)<c.r+player.h*.3){c.taken=true;score++;}}coins=coins.filter(c=>c.x>-30&&!c.taken);if(world>=100){mode='complete';best=Math.max(best,Math.floor(world));localStorage.setItem('gobshiteSideBest',best)}}
+function render(){ctx.setTransform(dpr,0,0,dpr,0,0);background();if(mode==='playing'||mode==='over'||mode==='complete'){for(const c of coins){ctx.save();ctx.translate(c.x,c.y+Math.sin(elapsed*6+c.x*.03)*3);ctx.fillStyle='#a4ef39';ctx.strokeStyle='#275a30';ctx.lineWidth=2;ctx.beginPath();ctx.arc(-5,-3,6,0,Math.PI*2);ctx.arc(5,-3,6,0,Math.PI*2);ctx.arc(0,4,6,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillRect(-2,7,4,7);ctx.restore()}for(const o of obstacles)drawImageOrShape(o.type,o.x,o.y,o.w,o.h);drawPlayer();hud();if(mode==='over')overlay('YOU STACKED IT!','Distance: '+Math.floor(world)+'m  ·  Shamrocks: '+score,'TRY AGAIN');if(mode==='complete')overlay('GRAND JOB!','You survived the first 100 metres.','PLAY AGAIN')}else{drawPlayer();overlay('READY, Eejit?','Jump logs. Grab shamrocks. Avoid humiliation.','START RUN')}}
+function loop(t){let dt=Math.min((t-last)/1000||0,.033);last=t;update(dt);render();requestAnimationFrame(loop)}requestAnimationFrame(loop);
 })();
 </script></body></html>
