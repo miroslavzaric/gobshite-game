@@ -1,20 +1,19 @@
-# GOBSHITE! Side-Scroller Foundation 0.1
+# GOBSHITE! Side-Scroller Foundation 0.2
 
-A fresh, deliberately small mobile-first side-scrolling prototype. This is a new gameplay foundation, not an update to the railway runner.
+A mobile-first 2D side-scrolling auto-runner test.
 
-## Gameplay
-- Tap/click/Space to jump.
-- Auto-running character, horizontally moving obstacles and collectible shamrocks.
-- First test milestone: survive 100 metres, with a short obstacle sequence.
-- Best distance saved locally in the browser.
+## Changes in 0.2
+- Faster initial run speed and stronger jump impulse.
+- Gravity tuned for a more responsive, less floaty jump.
+- Obstacles and shamrocks spawn at a more energetic rhythm.
+- Distance uses a slower, more readable metre scale so the short test does not end almost immediately.
+- Canvas pixel ratio capped lower on high-density mobile screens to reduce rendering load.
+- Background parallax moves independently from the distance counter.
 
 ## Deploy
-1. Extract this ZIP.
-2. Replace the files in the existing GitHub repository with the contents of this folder.
-3. Commit and push; Railway should deploy using `npm start`.
-4. Open the site on mobile. Tap once to start, then tap to jump.
+Replace the existing repository contents with this folder, including `public/assets`, commit and push, then wait for Railway to redeploy.
 
-## Known prototype limitations
-- The existing front-facing leprechaun sprite is temporarily reused; a proper side-facing run/jump sprite set is a next art task.
-- Background image is used as a scrolling parallax layer, with simple code-drawn foreground and ground.
-- This is a playable mechanics test, not a finished level.
+## Controls
+Tap anywhere to start or jump. Space / Arrow Up / W also works on desktop.
+
+This remains a mechanics prototype. The current leprechaun asset is front-facing; a matching side-view running/jumping sprite set is a later art task.

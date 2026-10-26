@@ -1,8 +1,12 @@
 {
   "name": "gobshite-side-scroller",
-  "version": "0.1.0",
-  "description": "GOBSHITE! side-scrolling foundation prototype",
+  "version": "0.2.0",
+  "description": "GOBSHITE! side-scroller foundation prototype 0.2",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=20" }
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
 }

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#174c35"><title>GOBSHITE! — The Great Irish Getaway v0.2</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#123b2c;font-family:system-ui,-apple-system,sans-serif;touch-action:none}canvas{display:block;width:100vw;height:100dvh;image-rendering:pixelated;touch-action:none}#hint{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 12px);left:0;right:0;text-align:center;color:#fff3c6;font-weight:800;font-size:12px;letter-spacing:1px;text-shadow:0 2px 4px #173a2b;pointer-events:none}
+</style></head><body><canvas id="game" aria-label="GOBSHITE side-scrolling game"></canvas><div id="hint">TAP TO JUMP · AVOID THE LOG · COLLECT SHAMROCKS</div>
+<script>
+(()=>{
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const img={};['leprechaun','irish-countryside','log','coin','barrel','sheep'].forEach(n=>{img[n]=new Image();img[n].src='assets/'+n+'.png'});
+let W=390,H=844,dpr=1,mode='title',last=0,elapsed=0,world=0,score=0,best=Number(localStorage.getItem('gobshiteSideBest')||0),speed=270,spawnIn=1.25,coinIn=0.9,obstacles=[],coins=[],particles=[],player={x:0,y:0,w:66,h:84,vy:0,onGround:true,frame:0};
+function resize(){dpr=Math.min(window.devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);player.x=W*.18;player.y=groundY()-player.h}
+function groundY(){return H*.79}
+window.addEventListener('resize',resize);resize();
+function drawCover(image,x,y,w,h,offset=0){if(!image||!image.complete||!image.naturalWidth)return;const iw=image.naturalWidth,ih=image.naturalHeight;let scale=Math.max(w/iw,h/ih),dw=iw*scale,dh=ih*scale;ctx.drawImage(image,x-offset,y,dw,dh)}
+function roundRect(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.lineWidth=3;ctx.strokeStyle=stroke;ctx.stroke()}}
+function background(){const gy=groundY();ctx.fillStyle='#83d8f2';ctx.fillRect(0,0,W,H); // sky
+// Use the illustrated asset as a real scrolling backdrop, plus subtle parallax repeat.
+if(img['irish-countryside']?.complete&&img['irish-countryside'].naturalWidth){let im=img['irish-countryside'];let bh=gy*.88,bw=bh*im.naturalWidth/im.naturalHeight;let off=(elapsed*18)%bw;for(let x=-off-bw;x<W+bw;x+=bw)ctx.drawImage(im,x,0,bw,bh)}
+// distant rolling green layers
+ctx.fillStyle='#5c9c55';ctx.beginPath();ctx.moveTo(0,gy-90);for(let x=0;x<=W+30;x+=30)ctx.lineTo(x,gy-105-Math.sin((x+world*.18)/73)*23-Math.cos(x/39)*9);ctx.lineTo(W,gy);ctx.lineTo(0,gy);ctx.closePath();ctx.fill();
+// road / grass ground
+ctx.fillStyle='#3b8b48';ctx.fillRect(0,gy-16,W,H-gy+16);ctx.fillStyle='#78c94f';ctx.fillRect(0,gy-12,W,15);ctx.fillStyle='#28643b';ctx.fillRect(0,gy+3,W,H-gy);
+// scrolling dirt path
+ctx.fillStyle='#b7793d';ctx.fillRect(0,gy+8,W,Math.max(24,H-gy-8));ctx.fillStyle='#d99b56';ctx.fillRect(0,gy+8,W,5);
+for(let x=-(world*.65%70);x<W;x+=70){ctx.fillStyle='#80502f';ctx.fillRect(x,gy+25,24,3);ctx.fillStyle='#f0c27c';ctx.fillRect(x+7,gy+43,3,2)}
+// little flowers on verge
+for(let x=-(world*.45%53);x<W;x+=53){ctx.fillStyle=['#fff4d6','#f7d85a','#f7a5c5'][Math.floor((x+world/20+1000)/53)%3];ctx.fillRect(x,gy-21-Math.abs(Math.sin(x*.1))*8,4,4)}
+}
+function drawPlayer(){const gy=groundY();let bob=player.onGround?Math.sin(elapsed*17)*2:0;let y=player.y+bob; if(img.leprechaun?.complete&&img.leprechaun.naturalWidth){ctx.drawImage(img.leprechaun,player.x,y,player.w,player.h)}else{ctx.fillStyle='#146b3d';ctx.fillRect(player.x,y,player.w,player.h);ctx.fillStyle='#e78336';ctx.fillRect(player.x+20,y+25,25,25)}
+// shadow
+ctx.fillStyle='rgba(23,48,25,.25)';ctx.beginPath();ctx.ellipse(player.x+player.w*.5,gy+7,player.w*.48,6,0,0,Math.PI*2);ctx.fill()}
+function spawnObstacle(){const type=Math.random()<.65?'log':'barrel';let w=type==='log'?Math.min(74,W*.19):Math.min(57,W*.15),h=type==='log'?Math.min(46,H*.07):Math.min(57,H*.085);obstacles.push({type,x:W+30,y:groundY()-h+5,w,h,passed:false});spawnIn=1.25+Math.random()*.55}
+function spawnCoins(){let n=4;let start=W+15;for(let i=0;i<n;i++)coins.push({x:start+i*35,y:groundY()-95-(i===1||i===2?18:0),r:13,taken:false});coinIn=1.8+Math.random()*1.0}
+function drawImageOrShape(name,x,y,w,h){const im=img[name];if(im?.complete&&im.naturalWidth)ctx.drawImage(im,x,y,w,h);else {ctx.fillStyle='#8b542f';ctx.fillRect(x,y,w,h)}}
+function hud(){roundRect(12,12,110,42,10,'#174a35','#f2d27b');ctx.font='bold 17px system-ui';ctx.textAlign='left';ctx.fillStyle='#fff5cf';ctx.fillText('☘ '+score,25,40);roundRect(W-142,12,94,42,10,'#174a35','#f2d27b');ctx.textAlign='center';ctx.fillText(Math.floor(world)+'m',W-95,40);}
+function overlay(title,sub,button){ctx.fillStyle='rgba(10,34,25,.55)';ctx.fillRect(0,0,W,H);let pw=Math.min(W-32,390),ph=300,px=(W-pw)/2,py=(H-ph)/2;roundRect(px,py,pw,ph,22,'#fff0bc','#d89a42');ctx.textAlign='center';ctx.fillStyle='#124631';ctx.font='1000 '+Math.min(42,W*.105)+'px system-ui';ctx.fillText('GOBSHITE!',W/2,py+58);ctx.fillStyle='#ba5c28';ctx.font='bold 14px system-ui';ctx.fillText('THE GREAT IRISH GETAWAY',W/2,py+84);ctx.fillStyle='#174a35';ctx.font='bold 25px system-ui';ctx.fillText(title,W/2,py+128);ctx.font='15px system-ui';ctx.fillText(sub,W/2,py+156);roundRect(px+25,py+190,pw-50,58,14,'#8ddd35','#174a35');ctx.fillStyle='#123c2c';ctx.font='bold 22px system-ui';ctx.fillText(button,W/2,py+227);ctx.font='12px system-ui';ctx.fillStyle='#31573e';ctx.fillText('TAP ANYWHERE TO JUMP',W/2,py+277)}
+function reset(){mode='playing';elapsed=0;world=0;score=0;speed=270;spawnIn=1.15;coinIn=.65;obstacles=[];coins=[];particles=[];player.y=groundY()-player.h;player.vy=0;player.onGround=true}
+function jump(){if(mode==='title'){reset();return}if(mode==='over'){mode='title';return}if(mode!=='playing')return;if(player.onGround){player.vy=-Math.min(680,H*.82);player.onGround=false}}
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();jump()});window.addEventListener('keydown',e=>{if(['Space','ArrowUp','KeyW'].includes(e.code)){e.preventDefault();jump()}});
+function update(dt){if(mode!=='playing')return;elapsed+=dt;world+=speed*dt/30;speed=Math.min(360,speed+dt*2.0);player.vy+=1780*dt;player.y+=player.vy*dt;let floor=groundY()-player.h;if(player.y>=floor){player.y=floor;player.vy=0;player.onGround=true}spawnIn-=dt;coinIn-=dt;if(spawnIn<=0)spawnObstacle();if(coinIn<=0)spawnCoins();for(const o of obstacles){o.x-=speed*dt;if(!o.passed&&o.x+o.w<player.x){o.passed=true;world+=1}let inset=10;let hit=player.x+player.w-inset>o.x+7&&player.x+inset<o.x+o.w-7&&player.y+player.h-7>o.y+7;if(hit){mode='over';best=Math.max(best,Math.floor(world));localStorage.setItem('gobshiteSideBest',best);return}}
+obstacles=obstacles.filter(o=>o.x+o.w>-40);for(const c of coins){c.x-=speed*dt;if(!c.taken&&Math.abs((player.x+player.w*.5)-c.x)<c.r+player.w*.28&&Math.abs((player.y+player.h*.4)-c.y)<c.r+player.h*.3){c.taken=true;score++;}}coins=coins.filter(c=>c.x>-30&&!c.taken);if(world>=100){mode='complete';best=Math.max(best,Math.floor(world));localStorage.setItem('gobshiteSideBest',best)}}
+function render(){ctx.setTransform(dpr,0,0,dpr,0,0);background();if(mode==='playing'||mode==='over'||mode==='complete'){for(const c of coins){ctx.save();ctx.translate(c.x,c.y+Math.sin(elapsed*6+c.x*.03)*3);ctx.fillStyle='#a4ef39';ctx.strokeStyle='#275a30';ctx.lineWidth=2;ctx.beginPath();ctx.arc(-5,-3,6,0,Math.PI*2);ctx.arc(5,-3,6,0,Math.PI*2);ctx.arc(0,4,6,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillRect(-2,7,4,7);ctx.restore()}for(const o of obstacles)drawImageOrShape(o.type,o.x,o.y,o.w,o.h);drawPlayer();hud();if(mode==='over')overlay('YOU STACKED IT!','Distance: '+Math.floor(world)+'m  ·  Shamrocks: '+score,'TRY AGAIN');if(mode==='complete')overlay('GRAND JOB!','You survived the first 100 metres.','PLAY AGAIN')}else{drawPlayer();overlay('READY, Eejit?','Jump logs. Grab shamrocks. Avoid humiliation.','START RUN')}}
+function loop(t){let dt=Math.min((t-last)/1000||0,.05);last=t;update(dt);render();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+})();
+</script></body></html>
